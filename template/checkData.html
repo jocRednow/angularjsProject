@@ -1,0 +1,1135 @@
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <img class="logo" src="/_graphics/logo_0.png" alt="СЗГМУ им. И.И.Мечникова">
+            </div>
+            <div class="col-md-6"></div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <!-- Comment Modal -->
+    <div class="modal fade" id="commentBlock" tabindex="-1" role="dialog" aria-labelledby="commentBlock-label" aria-hidden="true" data-keyboard="false">
+        <form id="commentForm" name="commentForm">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Закрыть</span></button>
+                        <h4>Комментарий</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{commentData.message}}</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- END Comment Modal -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="space"></div>
+            <h1 class="text-center">Данные пользователя</h1>
+            <div class="space"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            <p ng-if="userInfo.appointmentInfo">Записан/на на приём:
+                <strong>{{userInfo.appointmentInfo}}</strong>
+            </p>
+            <p ng-if="userInfo.withdrawalStatusName">Статус отзыва:
+                <strong>{{userInfo.withdrawalStatusName}}</strong>
+                <button ng-if="userInfo.withdrawalExportResponse"
+                        class="btn btn-xs btn-default" ng-click="passToComment(userInfo, 'with')"
+                        data-animation-effect="fadeIn" data-toggle="modal" data-target="#commentBlock">Комментарий</button>
+            </p>
+            <p ng-if="userInfo.applStatusName">Статус заявления:
+                <strong>{{userInfo.applStatusName}}</strong>
+                <button ng-if="userInfo.applExportResponse && userInfo.applStatusName != 'Принято ПК'"
+                        class="btn btn-xs btn-default" ng-click="passToComment(userInfo, 'appl')"
+                        data-animation-effect="fadeIn" data-toggle="modal" data-target="#commentBlock">Комментарий</button>
+                <span ng-if="userInfo.applExportResponse && userInfo.applStatusName == 'Принято ПК'">
+                                    (Номер личного дела:<strong>{{userInfo.applExportResponse}}</strong>)
+                                </span>
+            </p>
+        </div>
+        <div class="col-md-5">
+            <p ng-if="userInfo.withdrawalResponseDate">Дата ответа ПК по отзыву: <strong>{{userInfo.withdrawalResponseDate}}</strong></p>
+            <p ng-if="userInfo.withdrawalExportDate">Дата отправки отзыва в ПК: <strong>{{userInfo.withdrawalExportDate}}</strong></p>
+            <p ng-if="userInfo.applResponseDate">Дата ответа ПК: <strong>{{userInfo.applResponseDate}}</strong></p>
+            <p ng-if="userInfo.applExportDate">Дата отправки заявления в ПК: <strong>{{userInfo.applExportDate}}</strong></p>
+        </div>
+        <div class="col-md-2">
+            <button ng-if="checkedData.eduLevel.name == 'Додиплом'"
+                    class="btn btn-primary pull-right" ng-click="getStatementForWatch(checkedData.id)">Файлы</button>
+        </div>
+    </div>
+    <h3>{{checkedData.eduLevel.name}} (id:{{checkedData.id}})</h3>
+    <div class="space"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- SPEC -->
+            <table ng-if="checkedData.eduLevel.name == 'Додиплом'"
+                   class="table table-bordered">
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Личная информация и документ, удостоверяющий личность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Гражданство</p>
+                        <p>Фамилия</p>
+                        <p>Имя</p>
+                        <p>Отчество</p>
+                        <p>Полное имя</p>
+                        <p>ФИО в родительном падеже</p>
+                        <p>Пол</p>
+                        <p>Дата рождения</p>
+                        <p>Место рождения</p>
+                        <p>СНИЛС</p>
+                        <p>Дата СНИЛС</p>
+                        <p class="two-height">Файлы СНИЛС</p>
+                        <p>Электронная почта</p>
+                        <p>Домашний телефон</p>
+                        <p>Мобильный телефон</p>
+                        <p>Тип документа</p>
+                        <p>Серия</p>
+                        <p>Номер</p>
+                        <p>Код подразделения</p>
+                        <p>Дата выдачи</p>
+                        <p class="four-height">Кем выдан</p>
+                        <p class="four-height">Файлы</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.otherCountryRegion.name}}</p>
+                        <p>{{userData.lastName}}</p>
+                        <p>{{userData.firstName}}</p>
+                        <p>{{userData.middleName}}</p>
+                        <p>{{userData.name}}</p>
+                        <p>{{userData.contactPersonNameGenitive}}</p>
+                        <p>{{userData.gender.name}}</p>
+                        <p>{{userData.birthDate}}</p>
+                        <p>{{userData.birthPlace}}</p>
+                        <p>{{userData.inipa}}</p>
+                        <p>{{userData.inipaDate}}</p>
+                        <p class="two-height"><span ng-repeat="file in userData.snilsFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p>{{userData.email}}</p>
+                        <p>{{userData.homePhoneNumber}}</p>
+                        <p>{{userData.cellularPhone}}</p>
+                        <p>{{userData.identityCard.identityCardNameFull}}</p>
+                        <p>{{userData.identityCardSeries}}</p>
+                        <p>{{userData.identityCardNumber}}</p>
+                        <p>{{userData.identityCardIssueDep}}</p>
+                        <p>{{userData.identityCardIssueDate}}</p>
+                        <p class="four-height">{{userData.identityCardIssueBy}}</p>
+                        <p class="four-height"><span ng-repeat="file in userData.identityCardFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Адреса</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p class="four-height"><strong>Адрес регистрации</strong></p>
+                        <p class="ml-20">Страна</p>
+                        <p class="ml-20">Субъект</p>
+                        <p class="ml-20">Город</p>
+                        <p class="ml-20">Населенный пункт</p>
+                        <p class="ml-20">Внутригородская территория</p>
+                        <p class="ml-20">Район</p>
+                        <p class="ml-20">Элем. планир. структуры</p>
+                        <p class="ml-20">Подчиненные доп. территория объекты</p>
+                        <p class="ml-20">Улица</p>
+                        <p class="ml-20">Дом</p>
+                        <p class="ml-20">Квартира</p>
+                        <p class="ml-20">Индекс</p>
+                        <p class="four-height ml-20">Адрес</p>
+                        <p class="four-height ml-20">Уточнение адреса</p>
+                        <p class="four-height"><strong>Адрес фактический</strong></p>
+                        <p class="ml-20">Страна</p>
+                        <p class="ml-20">Субъект</p>
+                        <p class="ml-20">Город</p>
+                        <p class="ml-20">Населенный пункт</p>
+                        <p class="ml-20">Внутригородская территория</p>
+                        <p class="ml-20">Район</p>
+                        <p class="ml-20">Элем. планир. структуры</p>
+                        <p class="ml-20">Подчиненные доп. территория объекты</p>
+                        <p class="ml-20">Улица</p>
+                        <p class="ml-20">Дом</p>
+                        <p class="ml-20">Квартира</p>
+                        <p class="ml-20">Индекс</p>
+                        <p class="four-height ml-20">Адрес</p>
+                        <p class="four-height ml-20">Уточнение адреса</p>
+                        <p class="four-height"><strong>Адрес временной регистрации</strong></p>
+                        <p class="ml-20">Страна</p>
+                        <p class="ml-20">Субъект</p>
+                        <p class="ml-20">Город</p>
+                        <p class="ml-20">Населенный пункт</p>
+                        <p class="ml-20">Внутригородская территория</p>
+                        <p class="ml-20">Район</p>
+                        <p class="ml-20">Элем. планир. структуры</p>
+                        <p class="ml-20">Подчиненные доп. территория объекты</p>
+                        <p class="ml-20">Улица</p>
+                        <p class="ml-20">Дом</p>
+                        <p class="ml-20">Квартира</p>
+                        <p class="ml-20">Индекс</p>
+                        <p class="four-height ml-20">Адрес</p>
+                        <p class="four-height ml-20">Уточнение адреса</p>
+                    </td>
+                    <td class="user-data">
+                        <p class="four-height">{{userData.addressesDto[0].addressSearchObj.name}}</p>
+                        <p>{{userData.addressesDto[0].countryRegion.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel1.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel4.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel6.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel5.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel3.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel65.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel91.name}}</p>
+                        <p>{{userData.addressesDto[0].aolevel7.name}}</p>
+                        <p>{{userData.addressesDto[0].house.name}}</p>
+                        <p>{{userData.addressesDto[0].flat}}</p>
+                        <p>{{userData.addressesDto[0].postalCode}}</p>
+                        <p class="four-height">{{userData.addressesDto[0].addressTxt}}</p>
+                        <p class="four-height">{{userData.addressesDto[0].addressTxtRandom}}</p>
+                        <p class="four-height">{{userData.addressesDto[1].addressSearchObj.name}}</p>
+                        <p>{{userData.addressesDto[1].countryRegion.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel1.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel4.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel6.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel5.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel3.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel65.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel91.name}}</p>
+                        <p>{{userData.addressesDto[1].aolevel7.name}}</p>
+                        <p>{{userData.addressesDto[1].house.name}}</p>
+                        <p>{{userData.addressesDto[1].flat}}</p>
+                        <p>{{userData.addressesDto[1].postalCode}}</p>
+                        <p class="four-height">{{userData.addressesDto[1].addressTxt}}</p>
+                        <p class="four-height">{{userData.addressesDto[1].addressTxtRandom}}</p>
+                        <p class="four-height">{{userData.addressesDto[2].addressSearchObj.name}}</p>
+                        <p>{{userData.addressesDto[2].countryRegion.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel1.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel4.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel6.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel5.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel3.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel65.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel91.name}}</p>
+                        <p>{{userData.addressesDto[2].aolevel7.name}}</p>
+                        <p>{{userData.addressesDto[2].house.name}}</p>
+                        <p>{{userData.addressesDto[2].flat}}</p>
+                        <p>{{userData.addressesDto[2].postalCode}}</p>
+                        <p class="four-height">{{userData.addressesDto[2].addressTxt}}</p>
+                        <p class="four-height">{{userData.addressesDto[2].addressTxtRandom}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Образование</strong>
+                    </th>
+                    <td class="info user-data">
+                        <!--<p class="four-height">Получил аттестат в образовательной организации, расположенной на тер. р.Крым, в 2019 году</p>-->
+                        <p>Страна полученного образования</p>
+                        <p>Регион полученного образования</p>
+                        <p>Уровень образования</p>
+                        <p class="four-height">Наименование учебного заведения</p>
+                        <p>Год окончания учебного заведения</p>
+                        <p>Тип документа об образовании</p>
+                        <p>Серия</p>
+                        <p>Номер</p>
+                        <p>Дата выдачи</p>
+                        <p class="four-height">Кем выдан</p>
+                        <p>Серия приложения</p>
+                        <p>Номер приложения</p>
+                        <p>Средний балл аттестата</p>
+                        <p class="four-height">Файлы</p>
+                        <p>Факт изучения иностранных языков</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}}) Язык</p>
+                            <p class="sub-item">Название языка</p>
+                            <p class="sub-item">Уровень владения</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <!--<p class="four-height">{{userData.eduCrimea ? 'Да' : 'Нет'}}</p>-->
+                        <p>{{userData.eduCountryRegion.name}}</p>
+                        <p>{{userData.eduState.name}}</p>
+                        <p>{{userData.eduLevel.name}}</p>
+                        <p class="four-height">{{userData.instName}}</p>
+                        <p>{{userData.acadamyYear.id}}</p>
+                        <p>{{userData.eduDoc.name}}</p>
+                        <p>{{userData.eduCardSeries}}</p>
+                        <p>{{userData.eduCardNumber}}</p>
+                        <p>{{userData.eduCardIssueDate}}</p>
+                        <p class="four-height">{{userData.eduCardIssueBy}}</p>
+                        <p>{{userData.eduCardApplSeries}}</p>
+                        <p>{{userData.eduCardApplNumber}}</p>
+                        <p>{{userData.meanScoreEduDoc}}</p>
+                        <p class="four-height"><span ng-repeat="file in userData.eduDocFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p>{{userData.langInfo.name}}</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}})</p>
+                            <p>{{lang.language.id}}</p>
+                            <p>{{lang.score}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Индивидуальные достижения</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}}) Достижение</p>
+                            <p class="sub-item four-height">Имеются индивидуальные достижения в соответствии с пп. 36 правил приема</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p class="sub-sub-item">({{$index+1}}) Документ</p>
+                                <p class="sub-sub-item two-height">Тип документа, подтверждающего индивидуальное достижение</p>
+                                <p class="sub-sub-item">Документ</p>
+                                <p class="sub-sub-item">Серия</p>
+                                <p class="sub-sub-item">Номер / ID</p>
+                                <p class="sub-sub-item">Дата выдачи</p>
+                                <p class="sub-sub-item">Кем выдан</p>
+                            </div>
+                            <p class="sub-item four-height">Файлы</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}})</p>
+                            <p class="four-height">{{achievement.preference.name}}</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p>({{$index+1}})</p>
+                                <p class="two-height">{{doc.document.name}}</p>
+                                <p>{{doc.altDocName}}</p>
+                                <p>{{doc.docSeries}}</p>
+                                <p>{{doc.docNumber}}</p>
+                                <p>{{doc.docIssueDate}}</p>
+                                <p>{{doc.docIssueBy}}</p>
+                            </div>
+                            <p class="four-height"><span ng-repeat="file in achievement.files">{{$index+1}}){{file.userFileName}}; </span></p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>ЕГЭ и вступительные испытания</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="subj in userData.subjectScores">
+                            <p>({{$index+1}}) {{subj.subject.name}}</p>
+                            <p class="sub-item two-height">Прошу засчитать в качестве результатов вступительных испытаний</p>
+                            <p class="sub-item">Год сдачи ЕГЭ</p>
+                            <p class="sub-item four-height">Данные документа, удостоверяющего личность по которому сдавался экзамен совпадают с ранее введенным в "Личной информации"</p>
+                            <p class="sub-item">Фамилия</p>
+                            <p class="sub-item">Имя</p>
+                            <p class="sub-item">Отчество</p>
+                            <p class="sub-item">Гражданство</p>
+                            <p class="sub-item">Тип документа</p>
+                            <p class="sub-item">Серия</p>
+                            <p class="sub-item">Номер</p>
+                            <p class="sub-item">Дата выдачи</p>
+                            <p class="sub-item">Кем выдан</p>
+                            <p class="sub-item two-height">Засчитать в качестве результатов вступительных испытаний олимпиаду</p>
+                            <p class="sub-item two-height">Название олимпиады</p>
+                            <p class="sub-item">Статус участия</p>
+                            <div class="user-data" ng-repeat="doc in subj.entrantPreference.documents">
+                                <p class="sub-sub-item">({{$index+1}}) Документ</p>
+                                <p class="sub-sub-item two-height">Тип документа</p>
+                                <p class="sub-sub-item">Серия документа</p>
+                                <p class="sub-sub-item">Номер документа</p>
+                                <p class="sub-sub-item">Дата выдачи</p>
+                                <p class="sub-sub-item two-height">Кем выдан</p>
+                            </div>
+                            <p class="sub-item four-height">Файлы</p>
+                            <p class="sub-item">Балл</p>
+                        </div>
+                        <p class="six-height">Сведения о необходимости создания специальных условий при проведении вступительных испытаний в связи с ограниченными возможностями здоровья или инвалидностью</p>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="subj in userData.subjectScores">
+                            <p>({{$index+1}})</p>
+                            <p class="two-height">{{subj.examForm.name}}</p>
+                            <p>{{subj.yearDeliveryEGE}}</p>
+                            <p class="four-height">{{subj.docCheck ? 'Да' : 'Нет'}}</p>
+                            <p>{{subj.docLastName}}</p>
+                            <p>{{subj.docFirstName}}</p>
+                            <p>{{subj.docMiddleName}}</p>
+                            <p>{{subj.otherCountryRegion.name}}</p>
+                            <p>{{subj.identityCard.identityCardNameFull}}</p>
+                            <p>{{subj.identityCardSeries}}</p>
+                            <p>{{subj.identityCardNumber}}</p>
+                            <p>{{subj.identityCardIssueDate}}</p>
+                            <p>{{subj.identityCardIssueBy}}</p>
+                            <p class="two-height">{{subj.olympicCheck ? 'Да' : 'Нет'}}</p>
+                            <p class="two-height">{{subj.entrantPreference.preference.name}}</p>
+                            <p>{{subj.entrantPreference.typeDiploma.name}}</p>
+                            <div class="user-data" ng-repeat="doc in subj.entrantPreference.documents">
+                                <p>({{$index+1}})</p>
+                                <p class="two-height">{{doc.document.name}}</p>
+                                <p>{{doc.docSeries}}</p>
+                                <p>{{doc.docNumber}}</p>
+                                <p>{{doc.docIssueDate}}</p>
+                                <p class="two-height">{{doc.docIssueBy}}</p>
+                            </div>
+                            <p class="four-height"><span ng-repeat="file in subj.entrantPreference.files">{{$index+1}}){{file.userFileName}}; </span></p>
+                            <p>{{subj.score}}</p>
+                        </div>
+                        <p class="six-height">{{userData.specConditions}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Данные о родственниках</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="person in userData.relatives">
+                            <p>({{$index+1}}) Родственник</p>
+                            <p class="sub-item">Кем приходится</p>
+                            <p class="sub-item">Фамилия</p>
+                            <p class="sub-item">Имя</p>
+                            <p class="sub-item">Отчество</p>
+                            <p class="sub-item">Пол</p>
+                            <p class="sub-item">Дата рождения</p>
+                            <p class="sub-item two-height">Место рождения</p>
+                            <p class="sub-item two-height">Адрес проживания</p>
+                            <p class="sub-item">Индекс</p>
+                            <p class="sub-item">Домашний телефон</p>
+                            <p class="sub-item">Мобильный телефон</p>
+                            <p class="sub-item two-height">Наименование организации</p>
+                            <p class="sub-item two-height">Адрес организации</p>
+                            <p class="sub-item">Профессия</p>
+                            <p class="sub-item">Трудовой стаж</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="person in userData.relatives">
+                            <p>({{$index+1}})</p>
+                            <p>{{person.famRelationShip.name}}</p>
+                            <p>{{person.lastName}}</p>
+                            <p>{{person.firstName}}</p>
+                            <p>{{person.middleName}}</p>
+                            <p>{{person.gender.name}}</p>
+                            <p>{{person.birthDate}}</p>
+                            <p class="two-height">{{person.birthPlace}}</p>
+                            <p class="two-height">{{person.address.addressSearch.value}}</p>
+                            <p>{{person.address.postalCode}}</p>
+                            <p>{{person.homePhoneNumber}}</p>
+                            <p>{{person.cellularPhone}}</p>
+                            <p class="two-height">{{person.parentsOrgName}}</p>
+                            <p class="two-height">{{person.parentsOrgAddress}}</p>
+                            <p>{{person.profession}}</p>
+                            <p>{{person.employTime}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Воинская обязанность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Отношение к военной службе</p>
+                        <p>Воинское звание</p>
+                        <p>Прохождение службы</p>
+                        <p>Дата начала службы</p>
+                        <p>Дата окончания службы</p>
+                        <p>Тип документа о военной службе</p>
+                        <p>Серия документа о военной службе</p>
+                        <p>Номер документа о военной службе</p>
+                        <p>Дата выдачи документа о военной службе</p>
+                        <p>Кем выдан документ о военной службе</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.soldiery.id}}</p>
+                        <p>{{userData.militaryRank}}</p>
+                        <p>{{userData.soldieryStatus.name}}</p>
+                        <p>{{userData.soldieryBegDate}}</p>
+                        <p>{{userData.soldieryEndDate}}</p>
+                        <p>{{userData.militaryFormDoc.name}}</p>
+                        <p>{{userData.militarySeries}}</p>
+                        <p>{{userData.militaryNumber}}</p>
+                        <p>{{userData.militaryIssueDate}}</p>
+                        <p>{{userData.militaryIssueBy}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Заявление</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Условия приёма</p>
+                        <p class="six-height">Выберите специальности, на которые планируете поступать</p>
+                        <p>Специальность</p>
+                        <p>Регион ЦН</p>
+                        <p>Организация ЦН</p>
+                        <p>Номер договора</p>
+                        <p>Дата договора</p>
+                        <p class="four-height">Файлы ЦН</p>
+                        <div class="user-data" ng-repeat="doc in userData.applications[0].applicationLines[0].entrantPreference.documents">
+                            <p class="sub-item">({{$index+1}}) Документ</p>
+                            <p class="sub-item four-height">Тип документа</p>
+                            <p class="sub-item">Серия документа</p>
+                            <p class="sub-item">Номер документа</p>
+                            <p class="sub-item">Дата выдачи</p>
+                            <p class="sub-item two-height">Кем выдан</p>
+                        </div>
+                        <p class="four-height">Файлы Особой квоты</p>
+                        <p>Профильный предмет олимпиады</p>
+                        <p class="four-height">Файлы Без ВИ</p>
+                        <p class="two-height">Я хочу воспользоваться преимущественным правом</p>
+                        <div class="user-data" ng-repeat="pvg in userData.privileges">
+                            <p class="sub-item">({{$index+1}}) Преимущественное право</p>
+                            <p class="sub-item four-height">Название преимущественного права</p>
+                            <div class="user-data" ng-repeat="doc in pvg.documents">
+                                <p class="sub-sub-item">({{$index+1}}) Документ</p>
+                                <p class="sub-sub-item four-height">Тип документа</p>
+                                <p class="sub-sub-item">Серия документа</p>
+                                <p class="sub-sub-item">Номер документа</p>
+                                <p class="sub-sub-item">Дата выдачи</p>
+                                <p class="sub-sub-item two-height">Кем выдан</p>
+                            </div>
+                            <p class="sub-item four-height">Файлы Преимущественного права</p>
+                        </div>
+                        <p class="four-height">Мед. справка по ф.086-У</p>
+                        <p>Требуется общежитие?</p>
+                        <p>Оригиналы поданных документов прошу вернуть</p>
+                        <p>Индекс</p>
+                        <p class="two-height">Адрес</p>
+                        <p class="four-height">Прикрепите файл Заявления</p>
+                        <p class="four-height">Прикрепите файл Согласия</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.applications[0].applCondition.name}}</p>
+                        <p class="six-height">
+                            <span ng-repeat="line in userData.applications[0].applicationLines">{{$index+1}}){{line.spec}}; </span>
+                        </p>
+                        <p>{{userData.applications[0].mainApplication.spec}}</p>
+                        <p>{{userData.applications[0].applicationLines[0].targOrgAddressState}}</p>
+                        <p>{{userData.applications[0].applicationLines[0].targOrg}}</p>
+                        <p>{{userData.applications[0].contrNum}}</p>
+                        <p>{{userData.applications[0].contrDate}}</p>
+                        <p class="four-height"><span ng-repeat="file in userData.applications[0].contractFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <div class="user-data" ng-repeat="doc in userData.applications[0].applicationLines[0].entrantPreference.documents">
+                            <p>({{$index+1}})</p>
+                            <p class="four-height">{{doc.document.name}}</p>
+                            <p>{{doc.docSeries}}</p>
+                            <p>{{doc.docNumber}}</p>
+                            <p>{{doc.docIssueDate}}</p>
+                            <p class="two-height">{{doc.docIssueBy}}</p>
+                        </div>
+                        <p class="four-height"><span ng-repeat="file in userData.applications[0].quotaFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p>{{userData.applications[0].applicationLines[0].entrantPreference.profSubject}}</p>
+                        <p class="four-height"><span ng-repeat="file in userData.applications[0].noExamFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p class="two-height">{{userData.privilegeCheck ? 'Да' : 'Нет'}}</p>
+                        <div class="user-data" ng-repeat="pvg in userData.privileges">
+                            <p>({{$index+1}})</p>
+                            <p class="four-height">{{pvg.preference.name}}</p>
+                            <div class="user-data" ng-repeat="doc in pvg.documents">
+                                <p>({{$index+1}})</p>
+                                <p class="four-height">{{doc.document.name}}</p>
+                                <p>{{doc.docSeries}}</p>
+                                <p>{{doc.docNumber}}</p>
+                                <p>{{doc.docIssueDate}}</p>
+                                <p class="two-height">{{doc.docIssueBy}}</p>
+                            </div>
+                            <p class="four-height"><span ng-repeat="file in pvg.files">{{$index+1}}){{file.userFileName}}; </span></p>
+                        </div>
+                        <p class="four-height"><span ng-repeat="file in userData.medicalInformFiles">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p>{{userData.isHotel ? 'Да' : 'Нет'}}</p>
+                        <p>{{userData.applications[0].docReturnType.name}}</p>
+                        <p>{{userData.applications[0].docReturnIndex}}</p>
+                        <p class="two-height">{{userData.applications[0].docReturnPostAddress}}</p>
+                        <p class="four-height"><span ng-repeat="file in userData.statementFile">{{$index+1}}){{file.userFileName}}; </span></p>
+                        <p class="four-height"><span ng-repeat="file in userData.complianceFile">{{$index+1}}){{file.userFileName}}; </span></p>
+                    </td>
+                </tr>
+            </table>
+            <!-- ORD -->
+            <table ng-if="checkedData.eduLevel.name == 'Ординатура'"
+                   class="table table-bordered">
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Личная информация и документ, удостоверяющий личность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Гражданство</p>
+                        <p>Фамилия</p>
+                        <p>Имя</p>
+                        <p>Отчество</p>
+                        <p>Полное имя</p>
+                        <p>ФИО в родительном падеже</p>
+                        <p>Пол</p>
+                        <p>Дата рождения</p>
+                        <p>Место рождения</p>
+                        <p>СНИЛС</p>
+                        <p>Дата СНИЛС</p>
+                        <p>Электронная почта</p>
+                        <p>Домашний телефон</p>
+                        <p>Мобильный телефон</p>
+                        <p class="two-height">Укажите были ли вы или ваши близкие судимы, когда и за что</p>
+                        <p>Тип документа</p>
+                        <p>Серия</p>
+                        <p>Номер</p>
+                        <p>Код подразделения</p>
+                        <p>Дата выдачи</p>
+                        <p class="four-height">Кем выдан</p>
+                        <p>Предыдущее гражданство</p>
+                        <p>Дата смены гражданства</p>
+                        <p class="two-height">Причина смены гражданства</p>
+                        <p>Предыдущая фамилия</p>
+                        <p>Предыдущее имя</p>
+                        <p>Предыдущее отчество</p>
+                        <p>Тип документа</p>
+                        <p>Серия документа</p>
+                        <p>Номер документа</p>
+                        <p>Дата выдачи</p>
+                        <p class="four-height">Кем выдан</p>
+                        <p class="two-height">Причина смены имени</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.otherCountryRegion.name}}</p>
+                        <p>{{userData.lastName}}</p>
+                        <p>{{userData.firstName}}</p>
+                        <p>{{userData.middleName}}</p>
+                        <p>{{userData.name}}</p>
+                        <p>{{userData.contactPersonNameGenitive}}</p>
+                        <p>{{userData.gender.name}}</p>
+                        <p>{{userData.birthDate}}</p>
+                        <p>{{userData.birthPlace}}</p>
+                        <p>{{userData.inipa}}</p>
+                        <p>{{userData.inipaDate}}</p>
+                        <p>{{userData.email}}</p>
+                        <p>{{userData.homePhoneNumber}}</p>
+                        <p>{{userData.cellularPhone}}</p>
+                        <p class="two-height">{{userData.convictions}}</p>
+                        <p>{{userData.identityCard.identityCardNameFull}}</p>
+                        <p>{{userData.identityCardSeries}}</p>
+                        <p>{{userData.identityCardNumber}}</p>
+                        <p>{{userData.identityCardIssueDep}}</p>
+                        <p>{{userData.identityCardIssueDate}}</p>
+                        <p class="four-height">{{userData.identityCardIssueBy}}</p>
+                        <p>{{userData.prevNationality.name}}</p>
+                        <p>{{userData.prevNationalityDate}}</p>
+                        <p class="two-height">{{userData.prevNationalityReason}}</p>
+                        <p>{{userData.prevLastName}}</p>
+                        <p>{{userData.prevFirstName}}</p>
+                        <p>{{userData.prevMiddleName}}</p>
+                        <p>{{userData.prevDocType.name}}</p>
+                        <p>{{userData.prevDocSeries}}</p>
+                        <p>{{userData.prevDocNumber}}</p>
+                        <p>{{userData.prevDocIssueDate}}</p>
+                        <p class="four-height">{{userData.prevDocIssueBy}}</p>
+                        <p class="two-height">{{userData.prevNameReason}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Адреса</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p class="two-height">Адрес регистрации</p>
+                        <p>Индекс адреса регистрации</p>
+                        <p class="two-height">Адрес фактический</p>
+                        <p>Индекс адреса фактического</p>
+                        <p class="two-height">Адрес временной регистрации</p>
+                        <p>Индекс адреса временной регистрации</p>
+                    </td>
+                    <td class="user-data">
+                        <p class="two-height">{{userData.addresses[0].addressSearch.value}}</p>
+                        <p>{{userData.addresses[0].postalCode}}</p>
+                        <p class="two-height">{{userData.addresses[1].addressSearch.value}}</p>
+                        <p>{{userData.addresses[1].postalCode}}</p>
+                        <p class="two-height">{{userData.addresses[2].addressSearch.value}}</p>
+                        <p>{{userData.addresses[2].postalCode}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Образование</strong>
+                    </th>
+                    <td class="info user-data">
+                        <p>Факт изучения иностранных языков</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}}) Язык</p>
+                            <p class="sub-item">Название языка</p>
+                            <p class="sub-item">Уровень владения</p>
+                        </div>
+                        <div class="user-data" ng-repeat="edu in userData.educations">
+                            <p>({{$index+1}}) Образование</p>
+                            <p class="sub-item">Страна полученного образования</p>
+                            <p class="sub-item">Регион полученного образования</p>
+                            <p class="sub-item">Уровень образования</p>
+                            <p class="sub-item four-height">Наименование учебного заведения</p>
+                            <p class="sub-item four-height">Наименование учебного заведения (не найдено в списке)</p>
+                            <p class="sub-item">Дата поступления</p>
+                            <p class="sub-item">Год окончания учебного заведения</p>
+                            <p class="sub-item">Специальность</p>
+                            <p class="sub-item">Присвоена квалификация врача</p>
+                            <p class="sub-item">Тип документа об образовании</p>
+                            <p class="sub-item">Серия</p>
+                            <p class="sub-item">Номер</p>
+                            <p class="sub-item">Дата выдачи</p>
+                            <p class="sub-item two-height">Кем выдан</p>
+                            <p class="sub-item">Серия приложения</p>
+                            <p class="sub-item">Номер приложения</p>
+                            <p class="sub-item">Средний балл диплома</p>
+                            <p class="sub-item four-height">Наименование учебного заведения (Сертификакат)</p>
+                            <p class="sub-item four-height">Наименование учебного заведения (не найдено в списке) (Сертификакат)</p>
+                            <p class="sub-item">Специальность (Сертификакат)</p>
+                            <p class="sub-item">Серия (Сертификакат)</p>
+                            <p class="sub-item">Номер (Сертификакат)</p>
+                            <p class="sub-item">Дата выдачи (Сертификакат)</p>
+                            <p class="sub-item two-height">Кем выдан (Сертификакат)</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.langInfo.name}}</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}})</p>
+                            <p>{{lang.language.id}}</p>
+                            <p>{{lang.languageLevel.name}}</p>
+                        </div>
+                        <div class="user-data" ng-repeat="edu in userData.educations">
+                            <p>({{$index+1}})</p>
+                            <p>{{edu.eduCountryRegion.name}}</p>
+                            <p>{{edu.eduState.name}}</p>
+                            <p>{{edu.eduLevel.name}}</p>
+                            <p class="four-height">{{edu.inst.name}}</p>
+                            <p class="four-height">{{edu.instName}}</p>
+                            <p>{{edu.eduStartDate}}</p>
+                            <p>{{edu.acadamyYear.id}}</p>
+                            <p>{{edu.speciality.description}}</p>
+                            <p>{{edu.qualificationBool ? 'Да' : 'Нет' }}</p>
+                            <p>{{edu.eduDoc.name}}</p>
+                            <p>{{edu.eduCardSeries}}</p>
+                            <p>{{edu.eduCardNumber}}</p>
+                            <p>{{edu.eduCardIssueDate}}</p>
+                            <p class="two-height">{{edu.eduCardIssueBy}}</p>
+                            <p>{{edu.eduCardApplSeries}}</p>
+                            <p>{{edu.eduCardApplNumber}}</p>
+                            <p>{{edu.meanScoreEduDoc}}</p>
+                            <p class="four-height">{{edu.sertInst.name}}</p>
+                            <p class="four-height">{{edu.sertInstName}}</p>
+                            <p>{{edu.sertSpeciality.description}}</p>
+                            <p>{{edu.sertEduCardSeries}}</p>
+                            <p>{{edu.sertEduCardNumber}}</p>
+                            <p>{{edu.sertEduCardIssueDate}}</p>
+                            <p class="two-height">{{edu.sertEduCardIssueBy}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Индивидуальные достижения</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}}) Достижение</p>
+                            <p class="sub-item four-height">Имеются индивидуальные достижения в соответствии с пп. 36 правил приема</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p class="sub-sub-item">({{$index+1}}) Документ</p>
+                                <p class="sub-sub-item two-height">Тип документа, подтверждающего индивидуальное достижение</p>
+                                <p class="sub-sub-item">Документ</p>
+                                <p class="sub-sub-item">Серия</p>
+                                <p class="sub-sub-item">Номер</p>
+                                <p class="sub-sub-item">Дата выдачи / Дата публикации</p>
+                                <p class="sub-sub-item two-height">Кем выдан / Наименование источника</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}})</p>
+                            <p class="four-height">{{achievement.preference.name}}</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p>({{$index+1}})</p>
+                                <p class="two-height">{{doc.document.name}}</p>
+                                <p>{{doc.altDocName}}</p>
+                                <p>{{doc.docSeries}}</p>
+                                <p>{{doc.docNumber}}</p>
+                                <p>{{doc.docIssueDate}}</p>
+                                <p class="two-height">{{doc.docIssueBy}}</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Трудовой стаж</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="work in userData.workPlaces">
+                            <p>({{$index+1}}) Организация</p>
+                            <p class="sub-item two-height">Название организации</p>
+                            <p class="sub-item two-height">Адрес организации</p>
+                            <p class="sub-item">Должность</p>
+                            <p class="sub-item">Дата устройства на работу</p>
+                            <p class="sub-item">Дата увольнения</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="work in userData.workPlaces">
+                            <p>({{$index+1}})</p>
+                            <p class="two-height">{{work.name}}</p>
+                            <p class="two-height">{{work.address}}</p>
+                            <p>{{work.title}}</p>
+                            <p>{{work.dateFrom}}</p>
+                            <p>{{work.dateTo}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Данные о родственниках</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Должность</p>
+                        <p>Дата устройства на работу</p>
+                        <div class="user-data" ng-repeat="person in userData.relatives">
+                            <p>({{$index+1}}) Родственник</p>
+                            <p class="sub-item">Кем приходится</p>
+                            <p class="sub-item">Фамилия</p>
+                            <p class="sub-item">Имя</p>
+                            <p class="sub-item">Отчество</p>
+                            <p class="sub-item">Пол</p>
+                            <p class="sub-item">Дата рождения</p>
+                            <p class="sub-item two-height">Место рождения</p>
+                            <p class="sub-item two-height">Адрес проживания</p>
+                            <p class="sub-item">Индекс</p>
+                            <p class="sub-item">Домашний телефон</p>
+                            <p class="sub-item">Мобильный телефон</p>
+                            <p class="sub-item two-height">Наименование организации</p>
+                            <p class="sub-item two-height">Адрес организации</p>
+                            <p class="sub-item">Профессия</p>
+                            <p class="sub-item">Трудовой стаж</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.contactName}}</p>
+                        <p>{{userData.contactPhone}}</p>
+                        <div class="user-data" ng-repeat="person in userData.relatives">
+                            <p>({{$index+1}})</p>
+                            <p>{{person.famRelationShip.name}}</p>
+                            <p>{{person.lastName}}</p>
+                            <p>{{person.firstName}}</p>
+                            <p>{{person.middleName}}</p>
+                            <p>{{person.gender.name}}</p>
+                            <p>{{person.birthDate}}</p>
+                            <p class="two-height">{{person.birthPlace}}</p>
+                            <p class="two-height">{{person.address.addressSearch.value}}</p>
+                            <p>{{person.address.postalCode}}</p>
+                            <p>{{person.homePhoneNumber}}</p>
+                            <p>{{person.cellularPhone}}</p>
+                            <p class="two-height">{{person.parentsOrgName}}</p>
+                            <p class="two-height">{{person.parentsOrgAddress}}</p>
+                            <p>{{person.profession}}</p>
+                            <p>{{person.employTime}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Воинская обязанность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Отношение к военной службе</p>
+                        <p>Воинское звание</p>
+                        <p>Прохождение службы</p>
+                        <p>Дата начала службы</p>
+                        <p>Дата окончания службы</p>
+                        <p>Тип документа о военной службе</p>
+                        <p>Серия документа о военной службе</p>
+                        <p>Номер документа о военной службе</p>
+                        <p>Дата выдачи документа о военной службе</p>
+                        <p>Кем выдан документ о военной службе</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.soldiery.id}}</p>
+                        <p>{{userData.militaryRank}}</p>
+                        <p>{{userData.soldieryStatus.name}}</p>
+                        <p>{{userData.soldieryBegDate}}</p>
+                        <p>{{userData.soldieryEndDate}}</p>
+                        <p>{{userData.militaryFormDoc.name}}</p>
+                        <p>{{userData.militarySeries}}</p>
+                        <p>{{userData.militaryNumber}}</p>
+                        <p>{{userData.militaryIssueDate}}</p>
+                        <p>{{userData.militaryIssueBy}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Аккредитация</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p class="two-height">Прошу засчитать в качестве результата вступительного испытания</p>
+                        <p class="four-height">Наименование образовательной (научной организации)</p>
+                    </td>
+                    <td class="user-data">
+                        <p class="two-height">{{userData.accredTest.name}}</p>
+                        <p class="four-height">{{userData.testOrg.name}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Заявление</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="ordAppl in userData.applications[0].ordApplications">
+                            <p>({{$index+1}}) Заявление</p>
+                            <p class="sub-item">Специальность</p>
+                            <p class="sub-item four-height">Условия обучения</p>
+                            <p class="sub-item">Регион ЦН</p>
+                            <p class="sub-item two-height">Организация ЦН</p>
+                            <p class="sub-item">Номер договора</p>
+                            <p class="sub-item">Дата договора</p>
+                        </div>
+                        <p>Требуется общежитие?</p>
+                        <p>Оригиналы поданных документов прошу вернуть</p>
+                        <p>Индекс</p>
+                        <p class="two-height">Адрес</p>
+                        <p class="six-height">Сведения о необходимости создания специальных условий при проведении вступительных испытаний в связи с ограниченными возможностями здоровья или инвалидностью</p>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="ordAppl in userData.applications[0].ordApplications">
+                            <p>({{$index+1}})</p>
+                            <p>{{ordAppl.speciality.specName}}</p>
+                            <p class="four-height">
+                                <span ng-repeat="cond in ordAppl.conditions">{{$index+1}}){{cond.envDescr}}; </span>
+                            </p>
+                            <p>{{ordAppl.targState}}</p>
+                            <p class="two-height">{{ordAppl.targOrg.name}}</p>
+                            <p>{{ordAppl.contrNum}}</p>
+                            <p>{{ordAppl.contrDate}}</p>
+                        </div>
+                        <p>{{userData.isHotel ? 'Да' : 'Нет'}}</p>
+                        <p>{{userData.applications[0].docReturnType.name}}</p>
+                        <p>{{userData.applications[0].docReturnIndex}}</p>
+                        <p class="two-height">{{userData.applications[0].docReturnPostAddress}}</p>
+                        <p class="six-height">{{userData.specConditions}}</p>
+                    </td>
+                </tr>
+            </table>
+            <!-- ASP -->
+            <table ng-if="checkedData.eduLevel.name == 'Аспирантура'"
+                   class="table table-bordered">
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Личная информация и документ, удостоверяющий личность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Гражданство</p>
+                        <p>Фамилия</p>
+                        <p>Имя</p>
+                        <p>Отчество</p>
+                        <p>Полное имя</p>
+                        <p>ФИО в родительном падеже</p>
+                        <p>Пол</p>
+                        <p>Дата рождения</p>
+                        <p>Место рождения</p>
+                        <p>СНИЛС</p>
+                        <p>Дата СНИЛС</p>
+                        <p>Электронная почта</p>
+                        <p>Домашний телефон</p>
+                        <p>Мобильный телефон</p>
+                        <p>Тип документа</p>
+                        <p>Серия</p>
+                        <p>Номер</p>
+                        <p>Код подразделения</p>
+                        <p>Дата выдачи</p>
+                        <p class="two-height">Кем выдан</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.otherCountryRegion.name}}</p>
+                        <p>{{userData.lastName}}</p>
+                        <p>{{userData.firstName}}</p>
+                        <p>{{userData.middleName}}</p>
+                        <p>{{userData.name}}</p>
+                        <p>{{userData.contactPersonNameGenitive}}</p>
+                        <p>{{userData.gender.name}}</p>
+                        <p>{{userData.birthDate}}</p>
+                        <p>{{userData.birthPlace}}</p>
+                        <p>{{userData.inipa}}</p>
+                        <p>{{userData.inipaDate}}</p>
+                        <p>{{userData.email}}</p>
+                        <p>{{userData.homePhoneNumber}}</p>
+                        <p>{{userData.cellularPhone}}</p>
+                        <p>{{userData.identityCard.identityCardNameFull}}</p>
+                        <p>{{userData.identityCardSeries}}</p>
+                        <p>{{userData.identityCardNumber}}</p>
+                        <p>{{userData.identityCardIssueDep}}</p>
+                        <p>{{userData.identityCardIssueDate}}</p>
+                        <p class="two-height">{{userData.identityCardIssueBy}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Адреса</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p class="two-height">Адрес регистрации</p>
+                        <p>Индекс адреса регистрации</p>
+                        <p class="two-height">Адрес фактический</p>
+                        <p>Индекс адреса фактического</p>
+                        <p class="two-height">Адрес временной регистрации</p>
+                        <p>Индекс адреса временной регистрации</p>
+                    </td>
+                    <td class="user-data">
+                        <p class="two-height">{{userData.addresses[0].addressSearch.value}}</p>
+                        <p>{{userData.addresses[0].postalCode}}</p>
+                        <p class="two-height">{{userData.addresses[1].addressSearch.value}}</p>
+                        <p>{{userData.addresses[1].postalCode}}</p>
+                        <p class="two-height">{{userData.addresses[2].addressSearch.value}}</p>
+                        <p>{{userData.addresses[2].postalCode}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Образование</strong>
+                    </th>
+                    <td class="info user-data">
+                        <p>Уровень образования</p>
+                        <p class="two-height">Наименование учебного заведения</p>
+                        <p class="two-height">Наименование учебного заведения (не найдено в списке)</p>
+                        <p>Дата решения ГАК</p>
+                        <p>Специальность</p>
+                        <p>Квалификация</p>
+                        <p>Год окончания учебного заведения</p>
+                        <p>Тип документа об образовании</p>
+                        <p>Серия</p>
+                        <p>Номер</p>
+                        <p>Дата выдачи</p>
+                        <p class="two-height">Кем выдан</p>
+                        <p>Серия приложения</p>
+                        <p>Номер приложения</p>
+                        <p>Факт изучения иностранных языков</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}}) Язык</p>
+                            <p class="sub-item">Название языка</p>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <p>{{edu.eduLevel.name}}</p>
+                        <p class="two-height">{{edu.inst.name}}</p>
+                        <p class="two-height">{{edu.instName}}</p>
+                        <p>{{userData.sacDate}}</p>
+                        <p>{{userData.specDescription}}</p>
+                        <p>{{userData.qualDescription}}</p>
+                        <p>{{edu.acadamyYear.id}}</p>
+                        <p>{{edu.eduDoc.name}}</p>
+                        <p>{{edu.eduCardSeries}}</p>
+                        <p>{{edu.eduCardNumber}}</p>
+                        <p>{{edu.eduCardIssueDate}}</p>
+                        <p class="two-height">{{edu.eduCardIssueBy}}</p>
+                        <p>{{edu.eduCardApplSeries}}</p>
+                        <p>{{edu.eduCardApplNumber}}</p>
+                        <p>{{userData.langInfo.name}}</p>
+                        <div class="user-data" ng-repeat="lang in userData.languages">
+                            <p>({{$index+1}})</p>
+                            <p>{{lang.language.id}}</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Индивидуальные достижения</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}}) Достижение</p>
+                            <p class="sub-item four-height">Имеются индивидуальные достижения в соответствии с пп. 36 правил приема</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p class="sub-sub-item">({{$index+1}}) Документ</p>
+                                <p class="sub-sub-item two-height">Тип документа, подтверждающего индивидуальное достижение</p>
+                                <p class="sub-sub-item">Документ</p>
+                                <p class="sub-sub-item">Специальность</p>
+                                <p class="sub-sub-item">Серия</p>
+                                <p class="sub-sub-item">Номер / Номер журнала</p>
+                                <p class="sub-sub-item">Дата выдачи</p>
+                                <p class="sub-sub-item">Кем выдан</p>
+                                <p class="sub-sub-item">Название статьи</p>
+                                <p class="sub-sub-item two-height">Название журнала / гранта / конференции / патента</p>
+                                <p class="sub-sub-item two-height">Первый автор статьи / патентообладатель</p>
+                                <p class="sub-sub-item">Год издания / год получения</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="user-data">
+                        <div class="user-data" ng-repeat="achievement in userData.individualAchievements">
+                            <p>({{$index+1}})</p>
+                            <p class="four-height">{{achievement.preference.name}}</p>
+                            <div class="user-data" ng-repeat="doc in achievement.documents">
+                                <p>({{$index+1}})</p>
+                                <p class="two-height">{{doc.document.name}}</p>
+                                <p>{{doc.altDocName}}</p>
+                                <p>{{doc.speciality}}</p>
+                                <p>{{doc.docSeries}}</p>
+                                <p>{{doc.docNumber}}</p>
+                                <p>{{doc.docIssueDate}}</p>
+                                <p>{{doc.docIssueBy}}</p>
+                                <p>{{doc.articleName}}</p>
+                                <p class="two-height">{{doc.description}}</p>
+                                <p class="two-height">{{doc.authors}}</p>
+                                <p>{{doc.acadamyYear.id}}</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Воинская обязанность</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Отношение к военной службе</p>
+                        <p>Воинское звание</p>
+                        <p>Прохождение службы</p>
+                        <p>Дата начала службы</p>
+                        <p>Дата окончания службы</p>
+                        <p>Тип документа о военной службе</p>
+                        <p>Серия документа о военной службе</p>
+                        <p>Номер документа о военной службе</p>
+                        <p>Дата выдачи документа о военной службе</p>
+                        <p>Кем выдан документ о военной службе</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.soldiery.id}}</p>
+                        <p>{{userData.militaryRank}}</p>
+                        <p>{{userData.soldieryStatus.name}}</p>
+                        <p>{{userData.soldieryBegDate}}</p>
+                        <p>{{userData.soldieryEndDate}}</p>
+                        <p>{{userData.militaryFormDoc.name}}</p>
+                        <p>{{userData.militarySeries}}</p>
+                        <p>{{userData.militaryNumber}}</p>
+                        <p>{{userData.militaryIssueDate}}</p>
+                        <p>{{userData.militaryIssueBy}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center user-data-title">
+                        <strong>Заявление</strong>
+                    </th>
+                    <td class="info user-data user-data-title2">
+                        <p>Направление</p>
+                        <p>Направленность</p>
+                        <p class="six-height">Условия обучения</p>
+                        <p>Требуется общежитие?</p>
+                        <p>Оригиналы поданных документов прошу вернуть</p>
+                        <p>Индекс</p>
+                        <p class="two-height">Адрес</p>
+                    </td>
+                    <td class="user-data">
+                        <p>{{userData.applications[0].aspSpeciality.specialityName}}</p>
+                        <p>{{userData.applications[0].aspDerectivity.directivityName}}</p>
+                        <p class="six-height">
+                            <span ng-repeat="line in userData.applications[0].applicationLines">{{$index+1}}){{line.environmentName}}; </span>
+                        </p>
+                        <p>{{userData.isHotel ? 'Да' : 'Нет'}}</p>
+                        <p>{{userData.applications[0].docReturnType.name}}</p>
+                        <p>{{userData.applications[0].docReturnIndex}}</p>
+                        <p class="two-height">{{userData.applications[0].docReturnPostAddress}}</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="#!/privateOffice">
+                    <img class="logo" src="/_graphics/logo_0.png" alt="СЗГМУ им. И.И.Мечникова">
+                </a>
+            </div>
+            <div class="col-md-6"></div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="space"></div>
+            <h1 class="text-center">Данные заявления</h1>
+            <div class="space"></div>
+        </div>
+    </div>
+    <div class="space"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <button class="btn btn-primary" ng-click="doTheBack()">Назад</button>
+        </div>
+        <div class="col-md-6">
+            <p ng-repeat="file in filesList">
+                <a ng-href="/admission_com_api/File/{{file.id}}"
+                   target="_blank">{{file.userFileName}}</a>
+            </p>
+        </div>
+    </div>
+</div>

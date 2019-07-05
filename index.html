@@ -1,0 +1,65 @@
+<!doctype html>
+<html ng-app="appReg" lang="en" class="ng-cloak">
+<head>
+    <meta charset="utf-8">
+    <title>Приёмная кампания</title>
+    <meta name="description" content="Приёмная кампания">
+    <!-- NO CACHE (не пробовал, возможна проблема со localStorage) -->
+    <!--<meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />-->
+    <!-- END NO CACHE -->
+    <!-- Mobile Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../../_graphics/favicon.ico">
+    <!-- Bootstrap  -->
+    <link href="/libs/style/bootstrap.min.css" rel="stylesheet">
+    <!--  Angular UI  -->
+    <link rel="stylesheet" href="/libs/style/select.min.css">
+    <!-- Custom css -->
+    <link href="/css/style.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <script>
+        alert("Вы используете браузер в режиме совместимости с Internet Explorer 7, не поддерживаемый порталом. Пожалуйста, отключите режим совместимости или воспользуйтесь другим браузером.");
+    </script>
+    <![endif]-->
+</head>
+<body>
+    <ng-view></ng-view>
+    <!-- JavaScript files placed at the end of the document so the pages load faster
+        ================================================== -->
+    <!-- AngularJS -->
+    <script src="/libs/angular.min.js"></script>
+    <script src="/libs/angular-animate.min.js"></script>
+    <script src="/libs/ngMask.min.js"></script>
+    <script src="/libs/angular-sanitize.min.js"></script>
+    <script src="/libs/angular-route.min.js"></script>
+    <script src="/libs/angular-cookies.min.js"></script>
+    <script src="/libs/select.min.js"></script>
+    <!-- Jquery and Bootstrap -->
+    <script src="/libs/jquery-1.10.2.min.js"></script>
+    <script src="/libs/bootstrap.min.js"></script>
+    <script src="/libs/moment.min.js"></script>
+    <script src="/libs/moment-with-locales.min.js"></script>
+    <!-- Custom Scripts -->
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/APIService.js"></script>
+    <script type="text/javascript" src="/js/controllers/kioskFormCtrl.js?100"></script>
+    <script type="text/javascript" src="/js/controllers/registrationFormCtrl.js?100"></script>
+    <script type="text/javascript" src="/js/controllers/aspRegistrationFormCtrl.js?100"></script>
+    <script type="text/javascript" src="/js/controllers/ordRegistrationFormCtrl.js?100"></script>
+    <script type="text/javascript" src="/js/controllers/loginFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/registerChoiceFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/resetPasswordFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/resetEmailPasswordFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/phoneRegisterFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/emailRegisterFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/fullRegisterPhoneFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/fullRegisterEmailFormCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/privateOfficeCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/adminCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/statementInfoCtrl.js"></script>
+    <script type="text/javascript" src="/js/controllers/checkDataCtrl.js"></script>
+</body>
+</html>

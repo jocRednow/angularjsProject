@@ -1,0 +1,28 @@
+<div class="container mt-100">
+    <div class="col-sm-8 col-sm-offset-2">
+        <div ng-class="{ 'alert': flash, 'alert-success': flash.type == 'success', 'alert-danger': flash.type == 'error' }" ng-bind="flash.message"></div>
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Регистрация</h2>
+            <form name="form" ng-submit="login()" role="form">
+                <div class="form-group" ng-class="{ 'has-error': form.phone.$dirty && form.phone.$error.required }">
+                    <label for="phone">Телефон</label>
+                    <input type="text" name="phone" id="phone" class="form-control"
+                           ng-pattern="mobilePhone"  mask="79999999999"
+                           data-toggle="tooltip" data-placement="right" title="Введите в формате 7XXXXXXXXXX"
+                           ng-model="logInForm.phone" required />
+                    <span ng-show="form.phone.$dirty && form.phone.$error.required" class="help-block">Телефон обязательное поле</span>
+                </div>
+                <div class="checkbox">
+                    <label><input type="checkbox" name="checkAgree" ng-model="checkAgree" required>
+                        Нажимая кнопку «Отправить», я подтверждаю свою дееспособность, даю согласие на обработку ФГБОУ ВО СЗГМУ им. И.И. Мечникова моих персональных данных, а именно на их сбор, систематизацию, накопление, хранение, уточнение (обновление, изменение), использование, обезличивание, блокирование, передачу, уничтожение.</label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" ng-disabled="form.$invalid || dataLoading || error"
+                            class="btn btn-primary">Отправить</button>
+                    <img ng-if="dataLoading" src="/css/loader.gif" />
+                    <a href="#!/registerChoice" class="btn btn-link pull-right">Выбор регистрации</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

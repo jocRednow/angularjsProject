@@ -1,0 +1,1363 @@
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="#!/privateOffice">
+                    <img class="logo" src="/_graphics/logo_0.png" alt="СЗГМУ им. И.И.Мечникова">
+                </a>
+            </div>
+            <div class="col-md-6">
+                <p class="pull-right mt-30">
+                    <span class="user-title">{{userName}}</span>
+                    <button ng-click="logout()" class="btn btn-sm btn-primary">Выход</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <!-- Help Modal -->
+    <div class="modal fade" id="helpBlock" tabindex="-1" role="dialog" aria-labelledby="helpBlock-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <form id="helpForm" name="helpForm">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" ng-click="closeHelpBlock()" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Закрыть</span>
+                        </button>
+                        <h4 class="modal-title" id="helpBlock-label">Помощь</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">ФИО<span class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" required
+                                       data-toggle="tooltip" data-placement="right" title="Введите Фамилию Имя Отчество"
+                                       ng-class="{'error-necessarily-field': helpForm.name.$invalid, 'success-necessarily-field': helpForm.name.$valid}"
+                                       ng-model="helpData.name" name="name" placeholder="Введите Фамилию Имя Отчество" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Электронная почта<span class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <input type="email" class="form-control" required
+                                       data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХХХХ@ХХХ.XX"
+                                       ng-class="{'error-necessarily-field': helpForm.email.$invalid, 'success-necessarily-field': helpForm.email.$valid}"
+                                       ng-model="helpData.email" name="email" placeholder="Электронная почта" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Тип вопроса<span class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <ui-select ng-model="helpData.theme"
+                                           required name="theme"
+                                           data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                           ng-class="{'error-necessarily-select': helpForm.theme.$invalid, 'success-necessarily-select': helpForm.theme.$valid}">
+                                    <ui-select-match placeholder="Выберите из списка">
+                                        <span ng-bind="$select.selected.name"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item in (themeList | filter: $select.search) track by item.id">
+                                        <span>{{item.name}}</span>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-sm-11 alert alert-info" role="alert">
+                            По вопросам, связанным с правилами приема звоните в call центр приемной комиссии
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Комментарий<span class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <textarea class="form-control" name="comment" id="comment" required
+                                          placeholder="Опишите суть проблемы"
+                                          data-toggle="tooltip" data-placement="right" title="Введите текстом"
+                                          ng-class="{'error-necessarily-select': helpForm.comment.$invalid, 'success-necessarily-select': helpForm.comment.$valid}"
+                                          ng-model="helpData.comment" rows="6"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Прикрепление файла/файлов</label>
+                            <div class="col-sm-5">
+                                <input onchange="angular.element(this).scope().uploadFile(this)" type="file" id="helpFiles" class="success-necessarily-block"
+                                       data-toggle="tooltip" data-placement="right" title="Прикрепите файл/файлы"
+                                       name="helpFiles" accept="image/jpeg,image/png,image/gif,application/pdf" style="width: 300px;">
+                                <p ng-repeat="file in helpData.helpFiles" class="file-list">
+                                    {{$index+1}} <span class="glyphicon glyphicon-file"></span>{{file.userFileName}}
+                                    <span ng-click="deleteFile(helpData.helpFiles, file, 'helpFiles')">
+                                        <i class="glyphicon glyphicon-remove text-danger file-delete-icon" title="Удалить"></i>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-sm-1">
+                                <img ng-if="dataLoading" class="loader" src="/css/loader.gif" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-md-7 text-left">
+                                <button ng-if="helpForm.$valid" data-dismiss="modal"
+                                        ng-click="sendHelpData()" class="btn btn-sm btn-success">Отправить</button>
+                            </div>
+                            <div class="col-md-5">
+                                <button type="button" data-dismiss="modal"
+                                        class="btn btn-sm btn-default" ng-click="closeHelpBlock()">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- END Help Modal -->
+    <button class="btn btn-sm btn-success pull-right help-btn" ng-click="openHelpBlock()"
+            data-animation-effect="fadeIn" data-toggle="modal" data-target="#helpBlock">
+        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+        Помощь</button>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="space"></div>
+            <h1 class="text-center">Регистрационная форма. Аспирантура</h1>
+            <div class="space"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-8">
+            <span class=" pull-right" style="display: inline-block; margin-left: 20px">
+                <a ng-href="/admission_com_api/report/aspApplication?contactPersonId={{formData.id}}"
+                   ng-disabled="containerForm.$invalid || !addressesValid" target="_blank" class="btn btn-sm btn-primary">Заявление</a>
+            </span>
+        </div>
+        <div class="col-md-1">
+            <span data-toggle="tooltip" data-placement="top" class="glyphicon glyphicon-info-sign text-info top-blue-tooltip"
+                  title="Ссылка доступна после заполнения формы"></span>
+        </div>
+    </div>
+    <div class="space"></div>
+    <div class="row">
+        <form id="containerForm" name="containerForm" class="form-horizontal">
+            <div class="col-md-3">
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active menu-toggle" ng-class="buffer.firstForm.$valid ? 'all-fields-ok': 'fields-not-ok'" ng-click="sendDraftFormData(); loadTheService(1)">
+                        <i class="glyphicon" ng-class="buffer.firstForm.$valid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#firstTab" data-toggle="pill" target="_self">Личная информация и документ, удостоверяющий личность</a>
+                    </li>
+                    <li class="menu-toggle"
+                        ng-class="buffer.secondForm.$valid && addressesValid ? 'all-fields-ok': 'fields-not-ok'"
+                        ng-click="sendDraftFormData(); loadTheService(2)">
+                        <i class="glyphicon"
+                           ng-class="buffer.secondForm.$valid && addressesValid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#secondTab" data-toggle="pill" target="_self">Адреса</a>
+                    </li>
+                    <li class="menu-toggle" ng-class="buffer.thirdForm.$valid ? 'all-fields-ok': 'fields-not-ok'" ng-click="sendDraftFormData(); loadTheService(3)">
+                        <i class="glyphicon" ng-class="buffer.thirdForm.$valid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#thirdTab" data-toggle="pill" target="_self">Образование</a>
+                    </li>
+                    <li class="menu-toggle" ng-class="buffer.fourthForm.$valid ? 'all-fields-ok': 'fields-not-ok'" ng-click="sendDraftFormData(); loadTheService(4)">
+                        <i class="glyphicon" ng-class="buffer.fourthForm.$valid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#fourthTab" data-toggle="pill" target="_self">Индивидуальные достижения</a>
+                    </li>
+                    <li class="menu-toggle" ng-class="buffer.fifthForm.$valid ? 'all-fields-ok': 'fields-not-ok'" ng-click="sendDraftFormData(); loadTheService(5)">
+                        <i class="glyphicon" ng-class="buffer.fifthForm.$valid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#fifthTab" data-toggle="pill" target="_self">Воинская обязанность</a>
+                    </li>
+                    <li class="menu-toggle" ng-class="buffer.sixthForm.$valid ? 'all-fields-ok': 'fields-not-ok'" ng-click="sendDraftFormData(); loadTheService(6)">
+                        <i class="glyphicon" ng-class="buffer.sixthForm.$valid ? 'glyphicon-ok': 'glyphicon-remove'"></i>
+                        <a href="#sixthTab" data-toggle="pill" target="_self">Заявление</a>
+                    </li>
+                </ul>
+                <div class="space"></div>
+                <div class="alert alert-info">
+                    <strong class="text-danger">*</strong> - Обязательные поля
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="firstTab">
+                        <div class="form-horizontal" ng-form="firstForm">
+                            <div ng-init="buffer.firstForm = firstForm"></div>
+                            <div class="repeat-block">
+                                <h4 class="text-center"><strong>Личная информация</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Гражданство</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.otherCountryRegion"
+                                                   ng-disabled='true'
+                                                   required name="otherCountryRegion"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': firstForm.otherCountryRegion.$invalid, 'success-necessarily-select': firstForm.otherCountryRegion.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (addressCountryList | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Фамилия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность"
+                                               ng-class="{'error-necessarily-field': firstForm.lastName.$invalid, 'success-necessarily-field': firstForm.lastName.$valid}"
+                                               ng-model="formData.lastName" name="lastName" placeholder="Фамилия" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Имя</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность"
+                                               ng-class="{'error-necessarily-field': firstForm.firstName.$invalid, 'success-necessarily-field': firstForm.firstName.$valid}"
+                                               ng-model="formData.firstName" name="firstName" placeholder="Имя" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Отчество</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность. Заполняется при наличии"
+                                               ng-model="formData.middleName" name="middleName" placeholder="Отчество" />
+                                        <!--  ng-blur="addToGenitive()" -->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" data-toggle="tooltip" data-placement="right" title="Заполняется автоматически">Полное имя</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" disabled
+                                               ng-model="formData.name" name="name" placeholder="Полное имя" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Фамилия в родительном падеже</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом. Отвечает на вопрос 'от кого?'"
+                                               ng-class="{'error-necessarily-field': firstForm.lastNameGenitive.$invalid, 'success-necessarily-field': firstForm.lastNameGenitive.$valid}"
+                                               ng-model="formData.lastNameGenitive" name="lastNameGenitive" placeholder="Фамилия в родительном падеже" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Имя в родительном падеже</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом. Отвечает на вопрос 'от кого?'"
+                                               ng-class="{'error-necessarily-field': firstForm.firstNameGenitive.$invalid, 'success-necessarily-field': firstForm.firstNameGenitive.$valid}"
+                                               ng-model="formData.firstNameGenitive" name="firstNameGenitive" placeholder="Имя в родительном падеже" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Отчество в родительном падеже</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом. Отвечает на вопрос 'от кого?'. Заполняется при наличии"
+                                               ng-model="formData.middleNameGenitive" name="middleNameGenitive" placeholder="Отчество в родительном падеже" />
+                                    </div>
+                                </div>
+                                <!--<div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">ФИО в родительном падеже</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" name="contactPersonNameGenitive" required
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом. Отвечает на вопрос 'от кого?'"
+                                               ng-class="{'error-necessarily-field': firstForm.contactPersonNameGenitive.$invalid, 'success-necessarily-field': firstForm.contactPersonNameGenitive.$valid}"
+                                               placeholder="ФИО в родительном падеже" ng-model="formData.contactPersonNameGenitive">
+                                    </div>
+                                </div>-->
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Пол</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.gender"
+                                                   required name="gender"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': firstForm.gender.$invalid, 'success-necessarily-select': firstForm.gender.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (genderList | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Дата рождения</label>
+                                    <div class="col-sm-7">
+                                        <input id="birthDate"
+                                               type="text" class="form-control" required  mask="39-19-2999"
+                                               ng-class="{'error-necessarily-select': firstForm.birthDate.$invalid, 'success-necessarily-select': firstForm.birthDate.$valid}"
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                               ng-model="formData.birthDate" name="birthDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Место рождения</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность"
+                                               ng-class="{'error-necessarily-field': firstForm.birthPlace.$invalid, 'success-necessarily-field': firstForm.birthPlace.$valid}"
+                                               ng-model="formData.birthPlace" name="birthPlace" placeholder="Место рождения" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">СНИЛС</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required  mask="999-999-999 99"
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХ-ХХХ-ХХХ XX"
+                                               ng-class="{'error-necessarily-field': firstForm.inipa.$invalid, 'success-necessarily-field': firstForm.inipa.$valid}"
+                                               ng-pattern="regexInipa" ng-model="formData.inipa" name="inipa" placeholder="В формате ХХХ-ХХХ-ХХХ XX" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Дата СНИЛС</label>
+                                    <div class="col-sm-7">
+                                        <input id="inipaDate"
+                                               type="text" class="form-control" mask="39-19-2999"
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                               ng-model="formData.inipaDate" name="inipaDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Электронная почта</label>
+                                    <div class="col-sm-7">
+                                        <input type="email" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХХХХ@ХХХ.XX"
+                                               ng-class="{'error-necessarily-field': firstForm.email.$invalid, 'success-necessarily-field': firstForm.email.$valid}"
+                                               ng-model="formData.email" name="email" placeholder="Электронная почта" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Домашний телефон</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               ng-pattern="homePhone"
+                                               data-toggle="tooltip" data-placement="right" title="Введите домашний телефон"
+                                               ng-class="{'error-necessarily-field': firstForm.homePhoneNumber.$invalid}"
+                                               ng-model="formData.homePhoneNumber" name="homePhoneNumber" placeholder="Введите домашний телефон" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Мобильный телефон</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               ng-pattern="mobilePhone"  mask="8 (999) 999-99-99"
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате 8 (XXX) XXX-XX-XX"
+                                               ng-class="{'error-necessarily-field': firstForm.cellularPhone.$invalid, 'success-necessarily-field': firstForm.cellularPhone.$valid}"
+                                               ng-model="formData.cellularPhone" name="cellularPhone" placeholder="В формате 8 (XXX) XXX-XX-XX" />
+                                    </div>
+                                </div>
+                                <div class="space"></div>
+                                <h4 class="text-center"><strong>Документ, удостоверяющий личность</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Тип документа</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.identityCard"
+                                                   required name="identityCard"
+                                                   ng-change="changeIdentityCard()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите из списка документ, удостоверяющий личность, по которому будуте подавать заявление"
+                                                   ng-class="{'error-necessarily-select': firstForm.identityCard.$invalid, 'success-necessarily-select': firstForm.identityCard.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.identityCardNameFull"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (identityCardList | filter: $select.search) track by item.code">
+                                                <span>{{item.identityCardNameFull}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big" ng-if="formData.identityCard.code == 'Паспорт РФ'">
+                                    <label class="col-sm-4 control-label">Серия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required ng-pattern="docSeries4" mask="9999"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность. Введите в формате XXXX"
+                                               ng-class="{'error-necessarily-field': firstForm.identityCardSeries.$invalid, 'success-necessarily-field': firstForm.identityCardSeries.$valid}"
+                                               ng-model="formData.identityCardSeries" name="identityCardSeries" placeholder="Серия" />
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-if="formData.identityCard.code != 'Паспорт РФ'">
+                                    <label class="col-sm-4 control-label">Серия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность"
+                                               ng-model="formData.identityCardSeries" name="identityCardSeries" placeholder="Серия" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big" ng-if="formData.identityCard.code == 'Паспорт РФ'">
+                                    <label class="col-sm-4 control-label">Номер</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required ng-pattern="docNumber6" mask="999999"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность. Введите в формате XXXXXX"
+                                               ng-class="{'error-necessarily-field': firstForm.identityCardNumber.$invalid, 'success-necessarily-field': firstForm.identityCardNumber.$valid}"
+                                               ng-model="formData.identityCardNumber" name="identityCardNumber" placeholder="Номер" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big" ng-if="formData.identityCard.code != 'Паспорт РФ'">
+                                    <label class="col-sm-4 control-label">Номер</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность"
+                                               ng-class="{'error-necessarily-field': firstForm.identityCardNumber.$invalid, 'success-necessarily-field': firstForm.identityCardNumber.$valid}"
+                                               ng-model="formData.identityCardNumber" name="identityCardNumber" placeholder="Номер" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big" ng-if="formData.identityCard.code == 'Паспорт РФ'">
+                                    <label class="col-sm-4 control-label">Код подразделения</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required ng-pattern="docNumber6withDash" mask="999-999"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность. Введите в формате XXX-XXX"
+                                               ng-class="{'error-necessarily-field': firstForm.identityCardIssueDep.$invalid, 'success-necessarily-field': firstForm.identityCardIssueDep.$valid}"
+                                               ng-model="formData.identityCardIssueDep" name="identityCardIssueDep" placeholder="Код подразделения" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Дата выдачи</label>
+                                    <div class="col-sm-7">
+                                        <input id="identityCardIssueDate"
+                                               type="text" class="form-control" required  mask="39-19-2999"
+                                               ng-class="{'error-necessarily-select': firstForm.identityCardIssueDate.$invalid, 'success-necessarily-select': firstForm.identityCardIssueDate.$valid}"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе, удостоверяющем личность. Введите в формате ДД-ММ-ГГГГ"
+                                               ng-model="formData.identityCardIssueDate" name="identityCardIssueDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Кем выдан</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе, удостоверяющем личность"
+                                               ng-class="{'error-necessarily-field': firstForm.identityCardIssueBy.$invalid, 'success-necessarily-field': firstForm.identityCardIssueBy.$valid}"
+                                               ng-model="formData.identityCardIssueBy" name="identityCardIssueBy" placeholder="Кем выдан" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="secondTab">
+                        <div class="form-horizontal" ng-form="secondForm">
+                            <div ng-init="buffer.secondForm = secondForm"></div>
+                            <div class="repeat-block">
+                                <div ng-show="formData.addresses[0].addressSearch.value" class="form-group">
+                                    <label class="col-sm-4 control-label">Фактический адрес совпадает с адресом регистрации</label>
+                                    <div class="col-sm-7">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="homeAsReg" name="homeAsReg" ng-value="true" /> Да
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="homeAsReg" name="homeAsReg" ng-value="false" /> Нет
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-repeat="address in formData.addresses">
+                                    <h4 class="text-center">{{address.addressType.name}}</strong>
+                                        <span ng-if="address.addressType.name != 'Адрес временной регистрации'" class="text-danger">*</span>
+                                    </h4>
+                                    <ui-select ng-model="address.addressSearch" reset-search-input="false" required="true" id="addressSearch{{$index+1}}"
+                                               ng-class="{'error-necessarily-select': !address.addressSearch.value, 'success-necessarily-select': address.addressSearch.value}">
+                                        <ui-select-match placeholder="Начните вводить адрес..."
+                                                         ng-click="changeAgain($select, address.addressType.name)">
+                                            <span>{{$select.selected.value || $select.search}}</span>
+                                            <a class="btn btn-xs btn-link pull-right" ng-click="clearAddress($event, $select, address.addressType.name)">
+                                                <i class="glyphicon glyphicon-remove text-primary select-clear" title="Удалить строку"></i>
+                                            </a>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="address in (addresses | filter: { value: $select.search }) track by address.id"
+                                                           refresh="refreshAddressResults($select, address.addressType.name)" refresh-delay="0">
+                                            <span>{{address.value}}</span>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                    <div class="space"></div>
+                                    <div ng-if="address.addressType.name != 'Адрес временной регистрации'" class="form-group required-big mb-50">
+                                        <label class="col-sm-4 control-label">Индекс</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control"
+                                                   ng-pattern="docNumber6" mask="999999" required
+                                                   data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХХХХ"
+                                                   ng-class="{'error-necessarily-field': address.postalCode.length == 0 || address.postalCode == null || address.postalCode.length > 6,
+                                                   'success-necessarily-field': address.postalCode.length == 6}"
+                                                   ng-model="address.postalCode" name="postalCode{{$index+1}}" placeholder="Индекс" />
+                                        </div>
+                                    </div>
+                                    <div ng-if="address.addressType.name == 'Адрес временной регистрации'" class="form-group mb-50">
+                                        <label class="col-sm-4 control-label">Индекс</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control"
+                                                   ng-pattern="docNumber6" mask="999999"
+                                                   data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХХХХ"
+                                                   ng-model="address.postalCode" name="postalCode{{$index+1}}" placeholder="Индекс" />
+                                        </div>
+                                    </div>
+                                    <div class="space"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="thirdTab">
+                        <div class="form-horizontal" ng-form="thirdForm">
+                            <div ng-init="buffer.thirdForm = thirdForm"></div>
+                            <div class="repeat-block">
+                                <h4 class="text-center"><strong>Образование</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Уровень образования</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.eduLevel"
+                                                   required name="eduLevel"
+                                                   ng-change="changeEduLevel()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': thirdForm.eduLevel.$invalid, 'success-necessarily-select': thirdForm.eduLevel.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (eduLevels | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div ng-if="formData.instNameCheck == false" class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Наименование учебного заведения</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.highSchool"
+                                                   required name="highSchool"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': thirdForm.highSchool.$invalid, 'success-necessarily-select': thirdForm.highSchool.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name" title="{{$select.selected.name}}"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (highSchoolsList | filter: $select.search) track by item.id">
+                                                <span title="{{item.name}}">{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="checkbox" ng-model="formData.instNameCheck" name="instNameCheck" /> Не найдено в списке
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-if="formData.instNameCheck == true" class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Наименование учебного заведения</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе об образовании"
+                                               ng-class="{'error-necessarily-field': thirdForm.instName.$invalid, 'success-necessarily-field': thirdForm.instName.$valid}"
+                                               ng-model="formData.instName" name="instName" placeholder="Наименование учебного заведения" />
+                                        <div class="radio">
+                                            <label>
+                                                <input type="checkbox" ng-model="formData.instNameCheck" name="instNameCheck" /> Не найдено в списке
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Дата решения ГАК</label>
+                                    <div class="col-sm-7">
+                                        <input id="sacDate"
+                                               type="text" class="form-control" required  mask="39-19-2999"
+                                               ng-class="{'error-necessarily-select': thirdForm.sacDate.$invalid, 'success-necessarily-select': thirdForm.sacDate.$valid}"
+                                               data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                               ng-model="formData.sacDate" name="sacDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Специальность</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе об образовании"
+                                               ng-class="{'error-necessarily-field': thirdForm.specDescription.$invalid, 'success-necessarily-field': thirdForm.specDescription.$valid}"
+                                               ng-model="formData.specDescription" name="specDescription" placeholder="Специальность" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Квалификация</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе об образовании"
+                                               ng-class="{'error-necessarily-field': thirdForm.qualDescription.$invalid, 'success-necessarily-field': thirdForm.qualDescription.$valid}"
+                                               ng-model="formData.qualDescription" name="qualDescription" placeholder="Квалификация" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Год окончания учебного заведения</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.acadamyYear"
+                                                   required name="acadamyYear"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': thirdForm.acadamyYear.$invalid, 'success-necessarily-select': thirdForm.acadamyYear.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.id"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (acadamyYears | filter: $select.search) track by item.id">
+                                                <span>{{item.id}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Тип документа об образовании</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.eduDoc"
+                                                   required name="eduDoc"
+                                                   ng-change="changeEduDoc()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка. Для аттестата нового образца нужно выбрать «Аттестат о среднем общем образовании»"
+                                                   ng-class="{'error-necessarily-select': thirdForm.eduDoc.$invalid, 'success-necessarily-select': thirdForm.eduDoc.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (eduDocList | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-if="formData.eduDoc.id == 'Свидет' || formData.eduDoc.id == 'Сертиф'">
+                                    <label class="col-sm-4 control-label">Серия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе об образовании"
+                                               ng-model="formData.eduCardSeries" name="eduCardSeries" placeholder="Серия" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big" ng-if="formData.eduDoc.id == 'АтПолнСр'">
+                                    <label class="col-sm-4 control-label">Серия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" mask="99" required ng-pattern="docSeries2"
+                                               data-toggle="tooltip" data-placement="right" title="Первые две цифры и две буквы"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardSeries.$invalid, 'success-necessarily-field': thirdForm.eduCardSeries.$valid}"
+                                               ng-model="formData.eduCardSeries" name="eduCardSeries" placeholder="XX" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big"
+                                     ng-if="formData.eduDoc.id != 'Свидет' && formData.eduDoc.id != 'Сертиф' && formData.eduDoc.id != 'АтПолнСр'">
+                                    <label class="col-sm-4 control-label">Серия</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе об образовании"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardSeries.$invalid, 'success-necessarily-field': thirdForm.eduCardSeries.$valid}"
+                                               ng-model="formData.eduCardSeries" name="eduCardSeries" placeholder="Серия" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Номер</label>
+                                    <div class="col-sm-7" ng-if="formData.eduDoc.id == 'АтСр2014'">
+                                        <input type="text" class="form-control" mask="99999999999999" required ng-pattern="docNumber14"
+                                               data-toggle="tooltip" data-placement="right" title="Как в аттестате, полностью, 14 цифр"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardNumber.$invalid, 'success-necessarily-field': thirdForm.eduCardNumber.$valid}"
+                                               ng-model="formData.eduCardNumber" name="eduCardNumber" placeholder="XXXXXXXXXXXXXX" />
+                                    </div>
+                                    <div class="col-sm-7" ng-if="formData.eduDoc.id == 'АтПолнСр'">
+                                        <input type="text" class="form-control" mask="9999999" required ng-pattern="docNumber7"
+                                               data-toggle="tooltip" data-placement="right" title="Оставшиеся 7 цифр"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardNumber.$invalid, 'success-necessarily-field': thirdForm.eduCardNumber.$valid}"
+                                               ng-model="formData.eduCardNumber" name="eduCardNumber" placeholder="XXXXXXX" />
+                                    </div>
+                                    <div class="col-sm-7" ng-if="formData.eduDoc.id != 'АтПолнСр' && formData.eduDoc.id != 'АтСр2014'">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Строго, как в документе"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardNumber.$invalid, 'success-necessarily-field': thirdForm.eduCardNumber.$valid}"
+                                               ng-model="formData.eduCardNumber" name="eduCardNumber" placeholder="Номер" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Дата выдачи</label>
+                                    <div class="col-sm-7">
+                                        <input id="eduCardIssueDate"
+                                               type="text" class="form-control" required  mask="39-19-2999"
+                                               ng-class="{'error-necessarily-select': thirdForm.eduCardIssueDate.$invalid, 'success-necessarily-select': thirdForm.eduCardIssueDate.$valid}"
+                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе об образовании. Введите в формате ДД-ММ-ГГГГ"
+                                               ng-model="formData.eduCardIssueDate" name="eduCardIssueDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Документ об образовании выдан в том же учебном заведении</label>
+                                    <div class="col-sm-7">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="sameInstName" name="sameInstName" ng-value="true" /> Да
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="sameInstName" name="sameInstName" ng-value="false" /> Нет
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Кем выдан</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе об образовании"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardIssueBy.$invalid, 'success-necessarily-field': thirdForm.eduCardIssueBy.$valid}"
+                                               ng-model="formData.eduCardIssueBy" name="eduCardIssueBy" placeholder="Кем выдан" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Серия и номер приложения совпадают с серией и номером документа об образовании</label>
+                                    <div class="col-sm-7">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="sameSeriesAndNumber" name="sameSeriesAndNumber" ng-value="true" /> Да
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" ng-model="sameSeriesAndNumber" name="sameSeriesAndNumber" ng-value="false" /> Нет
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Серия приложения</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                               ng-model="formData.eduCardApplSeries" name="eduCardApplSeries" placeholder="Серия приложения" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Номер приложения</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" required
+                                               data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                               ng-class="{'error-necessarily-field': thirdForm.eduCardApplNumber.$invalid, 'success-necessarily-field': thirdForm.eduCardApplNumber.$valid}"
+                                               ng-model="formData.eduCardApplNumber" name="eduCardApplNumber" placeholder="Номер приложения" />
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Факт изучения иностранных языков</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.langInfo" required name="langInfo"
+                                                   ng-change="changeLangInfo()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': thirdForm.langInfo.$invalid, 'success-necessarily-select': thirdForm.langInfo.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (langInfoList | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div ng-if="formData.langInfo.name == 'Изучал'"
+                                     ng-repeat="lang in formData.languages" class="repeat-block">
+                                    <div><i class="glyphicon glyphicon-remove delete-field" aria-hidden="true" title="Удалить этот набор полей"
+                                            ng-click="removeField(lang, formData.languages)"></i></div>
+                                    <div class="form-group required-big">
+                                        <label class="col-sm-4 control-label">Язык</label>
+                                        <div class="col-sm-7">
+                                            <ui-select ng-model="lang.language"
+                                                       required name="language"
+                                                       data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                       ng-class="{'error-necessarily-select': !lang.language, 'success-necessarily-select': lang.language}">
+                                                <ui-select-match placeholder="Выберите из списка">
+                                                    <span ng-bind="$select.selected.id"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in (languagesList | filter: $select.search) track by item.id">
+                                                    <span>{{item.id}}</span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space"></div>
+                                <div class="row" ng-if="formData.langInfo.name == 'Изучал'">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-5">
+                                        <button class="btn btn-sm btn-success btn-add" type="button" name="phoneButton"
+                                                ng-click="addNewField($event, formData.languages)" title="Добавить новый">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger btn-remove" title="Удалить последний"
+                                                type="button" ng-click="removeLastField(formData.languages)">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="fourthTab">
+                        <div class="form-horizontal" ng-form="fourthForm">
+                            <div ng-init="buffer.fourthForm = fourthForm"></div>
+                            <div class="repeat-block">
+                                <h4 class="text-center"><strong>Индивидуальные достижения</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">Количество научных трудов</label>
+                                    <div class="col-sm-7">
+                                        <input type="number" class="form-control"
+                                               data-toggle="tooltip" data-placement="right" title="Колличество научных трудов"
+                                               ng-model="formData.scienceWorksQty" name="scienceWorksQty" placeholder="Колличество научных трудов" />
+                                    </div>
+                                </div>
+                                <div ng-repeat="achievement in formData.individualAchievements" class="repeat-block">
+                                    <div><i class="glyphicon glyphicon-remove delete-field" aria-hidden="true" title="Удалить этот набор полей"
+                                            ng-click="removeFieldHard(achievement, formData.individualAchievements, 'individualAchievements')"></i></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">Имеются индивидуальные достижения в соответствии с пп. 36 правил приема</label>
+                                        <div class="col-sm-7">
+                                            <ui-select ng-model="achievement.preference"
+                                                       name="preference"
+                                                       ng-change="changePreference(achievement); sendDraftFormData()"
+                                                       data-toggle="tooltip" data-placement="right" title="Выберите значение из списка">
+                                                <ui-select-match placeholder="Выберите из списка">
+                                                    <span ng-bind="$select.selected.name" title="{{$select.selected.name}}"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in (individualAchievementsList | filter: $select.search) track by item.id">
+                                                    <span title="{{item.name}}">{{item.name}}</span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                        <div class="col-sm-1">
+                                    <span data-toggle="tooltip" data-placement="bottom" class="glyphicon glyphicon-info-sign text-danger red-tooltip"
+                                          title="При наличии индивидуального достижения из списка выбрать соответствующий пункт"></span>
+                                        </div>
+                                    </div>
+                                    <div ng-if="achievement.preference.isDocExist == true">
+                                        <div ng-repeat="docs in achievement.documents" class="repeat-block">
+                                            <div><i class="glyphicon glyphicon-remove delete-field" aria-hidden="true" title="Удалить этот набор полей"
+                                                    ng-click="removeField(docs, achievement.documents)"></i></div>
+                                            <div class="form-group required-big">
+                                                <label class="col-sm-4 control-label">Тип документа, подтверждающего индивидуальное достижение</label>
+                                                <div class="col-sm-7">
+                                                    <ui-select ng-model="docs.document"
+                                                               required name="document"
+                                                               ng-change="changeDocType(docs)"
+                                                               data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                               ng-class="{'error-necessarily-select': !docs.document, 'success-necessarily-select': docs.document}">
+                                                        <ui-select-match placeholder="Выберите из списка">
+                                                            <span ng-bind="$select.selected.name"></span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices repeat="item in (achievementDocList | filter: $select.search) track by item.id">
+                                                            <span>{{item.name}}</span>
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group required-big" ng-if="docs.document.name == 'Иной документ'">
+                                                <label class="col-sm-4 control-label">Документ</label>
+                                                <div class="col-sm-7">
+                                                    <input type="text" class="form-control" required
+                                                           data-toggle="tooltip" data-placement="right" title="Введите имя документа"
+                                                           ng-class="{'error-necessarily-field': !docs.altDocName, 'success-necessarily-field': docs.altDocName}"
+                                                           ng-model="docs.altDocName" name="altDocName" placeholder="Документ" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group required-big" ng-if="achievement.preference.id == 'AT051' && docs.document.id == '062'">
+                                                <label class="col-sm-4 control-label">Специальность</label>
+                                                <div class="col-sm-7">
+                                                    <input type="text" class="form-control" required
+                                                           data-toggle="tooltip" data-placement="right" title="Введите специальность"
+                                                           ng-class="{'error-necessarily-field': !docs.speciality, 'success-necessarily-field': docs.speciality}"
+                                                           ng-model="docs.speciality" name="speciality" placeholder="Специальность" />
+                                                </div>
+                                            </div>
+                                            <div ng-if="docs.document.id != '089' && docs.document.id != '090' && docs.document.id != '091' &&
+                                                        docs.document.id != '044' && docs.document.id != '045'">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Серия</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control"
+                                                               data-toggle="tooltip" data-placement="right" title="Строго, как в документе"
+                                                               ng-model="docs.docSeries" name="docSeries" placeholder="Серия" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Номер</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Строго, как в документе"
+                                                               ng-class="{'error-necessarily-field': !docs.docNumber, 'success-necessarily-field': docs.docNumber}"
+                                                               ng-model="docs.docNumber" name="docNumber" placeholder="Номер" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Дата выдачи</label>
+                                                    <div class="col-sm-7">
+                                                        <input id="docIssueDate{{$parent.$index+1}}doc{{$index+1}}"
+                                                               type="text" class="form-control" required  mask="39-19-2999"
+                                                               ng-class="{'error-necessarily-select': !docs.docIssueDate, 'success-necessarily-select': docs.docIssueDate}"
+                                                               data-toggle="tooltip" data-placement="right" title="Строго как в документе об образовании. Введите в формате ДД-ММ-ГГГГ"
+                                                               ng-model="docs.docIssueDate" name="docIssueDate{{$parent.$index+1}}doc{{$index+1}}" placeholder="В формате ДД-ММ-ГГГГ" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Кем выдан</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Полностью, как в документе об образовании"
+                                                               ng-class="{'error-necessarily-field': !docs.docIssueBy, 'success-necessarily-field': docs.docIssueBy}"
+                                                               ng-model="docs.docIssueBy" name="docIssueBy" placeholder="Кем выдан" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-if="(achievement.preference.id == 'AT034' && docs.document.id == '089') ||
+                                                        (achievement.preference.id == 'AT035' && docs.document.id == '089') ||
+                                                        (achievement.preference.id == 'AT036' && docs.document.id == '089') ||
+                                                        (achievement.preference.id == 'AT037' && docs.document.id == '089') ||
+                                                        (achievement.preference.id == 'AT046' && docs.document.id == '089') ||
+                                                        (achievement.preference.id == 'AT047' && docs.document.id == '089')">
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Название статьи</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите название статьи"
+                                                               ng-class="{'error-necessarily-field': !docs.articleName, 'success-necessarily-field': docs.articleName}"
+                                                               ng-model="docs.articleName" name="articleName" placeholder="Название статьи" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Название журнала</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите название журнала"
+                                                               ng-class="{'error-necessarily-field': !docs.description, 'success-necessarily-field': docs.description}"
+                                                               ng-model="docs.description" name="description" placeholder="Название журнала" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Первый автор статьи</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите первого автора статьи"
+                                                               ng-class="{'error-necessarily-field': !docs.authors, 'success-necessarily-field': docs.authors}"
+                                                               ng-model="docs.authors" name="authors" placeholder="Первый автор статьи" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Год издания</label>
+                                                    <div class="col-sm-7">
+                                                        <ui-select ng-model="docs.acadamyYear"
+                                                                   required name="acadamyYear"
+                                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                                   ng-class="{'error-necessarily-select': !docs.acadamyYear, 'success-necessarily-select': docs.acadamyYear}">
+                                                            <ui-select-match placeholder="Выберите из списка">
+                                                                <span ng-bind="$select.selected.id"></span>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="item in (acadamyYears | filter: $select.search) track by item.id">
+                                                                <span>{{item.id}}</span>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Номер журнала</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите номер журнала"
+                                                               ng-class="{'error-necessarily-field': !docs.docNumber, 'success-necessarily-field': docs.docNumber}"
+                                                               ng-model="docs.docNumber" name="docNumber" placeholder="Номер журнала" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-if="achievement.preference.id == 'AT038' && (docs.document.id == '090' || docs.document.id == '091')">
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Название гранта</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите название гранта"
+                                                               ng-class="{'error-necessarily-field': !docs.description, 'success-necessarily-field': docs.description}"
+                                                               ng-model="docs.description" name="description" placeholder="Название гранта" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Год получения</label>
+                                                    <div class="col-sm-7">
+                                                        <ui-select ng-model="docs.acadamyYear"
+                                                                   required name="acadamyYear"
+                                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                                   ng-class="{'error-necessarily-select': !docs.acadamyYear, 'success-necessarily-select': docs.acadamyYear}">
+                                                            <ui-select-match placeholder="Выберите из списка">
+                                                                <span ng-bind="$select.selected.id"></span>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="item in (acadamyYears | filter: $select.search) track by item.id">
+                                                                <span>{{item.id}}</span>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-if="(achievement.preference.id == 'AT070' || achievement.preference.id == 'AT071') && docs.document.id == '044'">
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Название конференции</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите название конференции"
+                                                               ng-class="{'error-necessarily-field': !docs.description, 'success-necessarily-field': docs.description}"
+                                                               ng-model="docs.description" name="description" placeholder="Название конференции" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Год конференции</label>
+                                                    <div class="col-sm-7">
+                                                        <ui-select ng-model="docs.acadamyYear"
+                                                                   required name="acadamyYear"
+                                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                                   ng-class="{'error-necessarily-select': !docs.acadamyYear, 'success-necessarily-select': docs.acadamyYear}">
+                                                            <ui-select-match placeholder="Выберите из списка">
+                                                                <span ng-bind="$select.selected.id"></span>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="item in (acadamyYears | filter: $select.search) track by item.id">
+                                                                <span>{{item.id}}</span>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-if="achievement.preference.id == 'AT044' && docs.document.id == '045'">
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Название патента</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите название патента"
+                                                               ng-class="{'error-necessarily-field': !docs.description, 'success-necessarily-field': docs.description}"
+                                                               ng-model="docs.description" name="description" placeholder="Название патента" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Номер</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите номер"
+                                                               ng-class="{'error-necessarily-field': !docs.docNumber, 'success-necessarily-field': docs.docNumber}"
+                                                               ng-model="docs.docNumber" name="docNumber" placeholder="Номер" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group required-big">
+                                                    <label class="col-sm-4 control-label">Патентообладатель</label>
+                                                    <div class="col-sm-7">
+                                                        <input type="text" class="form-control" required
+                                                               data-toggle="tooltip" data-placement="right" title="Введите Патентообладателя"
+                                                               ng-class="{'error-necessarily-field': !docs.authors, 'success-necessarily-field': docs.authors}"
+                                                               ng-model="docs.authors" name="authors" placeholder="Патентообладатель" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2"></div>
+                                            <div class="col-sm-5">
+                                                <button class="btn btn-sm btn-success btn-add" type="button" name="phoneButton"
+                                                        ng-click="addNewField($event, achievement.documents)" title="Добавить новый">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger btn-remove" title="Удалить последний"
+                                                        type="button" ng-click="removeLastField(achievement.documents)">
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space"></div>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <button class="btn btn-sm btn-success btn-add" type="button"
+                                                ng-click="addNewFieldWithInner($event, formData.individualAchievements)" title="Добавить новый">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger btn-remove" title="Удалить последний"
+                                                type="button" ng-click="removeLastFieldHard(formData.individualAchievements, 'individualAchievements')">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="fifthTab">
+                        <div class="form-horizontal" ng-form="fifthForm">
+                            <div ng-init="buffer.fifthForm = fifthForm"></div>
+                            <div class="repeat-block">
+                                <h4 class="text-center"><strong>Воинская обязанность</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Отношение к военной службе</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.soldiery"
+                                                   required name="soldiery"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': fifthForm.soldiery.$invalid, 'success-necessarily-select': fifthForm.soldiery.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.id"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (soldieryList | filter: $select.search) track by item.id">
+                                                <span>{{item.id}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div ng-if="formData.soldiery.id == 'Военнообязанный'">
+                                    <div class="form-group" ng-if="formData.militaryFormDoc.id != 2">
+                                        <label class="col-sm-4 control-label">Воинское звание</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" ng-model="formData.militaryRank"
+                                                   data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                   name="militaryRank" placeholder="Воинское звание" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group required-big" ng-if="formData.militaryFormDoc.id == 2">
+                                        <label class="col-sm-4 control-label">Воинское звание</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" ng-model="formData.militaryRank" required
+                                                   data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                   ng-class="{'error-necessarily-select': fifthForm.militaryRank.$invalid, 'success-necessarily-select': fifthForm.militaryRank.$valid}"
+                                                   name="militaryRank" placeholder="Воинское звание" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group required-big">
+                                        <label class="col-sm-4 control-label">Прохождение службы</label>
+                                        <div class="col-sm-7">
+                                            <ui-select ng-model="formData.soldieryStatus"
+                                                       required name="soldieryStatus"
+                                                       data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                       ng-class="{'error-necessarily-select': fifthForm.soldieryStatus.$invalid, 'success-necessarily-select': fifthForm.soldieryStatus.$valid}">
+                                                <ui-select-match placeholder="Выберите из списка">
+                                                    <span ng-bind="$select.selected.name"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in (soldieryStatusList | filter: $select.search) track by item.id">
+                                                    <span>{{item.name}}</span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div ng-if="formData.soldieryStatus.id == 1">
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Дата начала службы</label>
+                                            <div class="col-sm-7">
+                                                <input id="soldieryBegDate"
+                                                       type="text" class="form-control" mask="39-19-2999"
+                                                       data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                                       ng-model="formData.soldieryBegDate" name="soldieryBegDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Дата окончания службы</label>
+                                            <div class="col-sm-7">
+                                                <input id="soldieryEndDate"
+                                                       type="text" class="form-control" mask="39-19-2999"
+                                                       data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                                       ng-model="formData.soldieryEndDate" name="soldieryEndDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group required-big">
+                                        <label class="col-sm-4 control-label">Тип документа о военной службе</label>
+                                        <div class="col-sm-7">
+                                            <ui-select ng-model="formData.militaryFormDoc"
+                                                       required name="militaryFormDoc"
+                                                       data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                       ng-class="{'error-necessarily-select': fifthForm.militaryFormDoc.$invalid, 'success-necessarily-select': fifthForm.militaryFormDoc.$valid}">
+                                                <ui-select-match placeholder="Выберите из списка">
+                                                    <span ng-bind="$select.selected.name"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in (militaryFormDocsList | filter: $select.search) track by item.id">
+                                                    <span>{{item.name}}</span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div ng-if="formData.militaryFormDoc.id == 1 || formData.militaryFormDoc.id == 2">
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Серия документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control"
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-model="formData.militarySeries" name="militarySeries" placeholder="Серия документа о военной службе" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Номер документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control"
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-model="formData.militaryNumber" name="militaryNumber" placeholder="Номер документа о военной службе" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Дата выдачи документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input id="militaryIssueDate"
+                                                       type="text" class="form-control" mask="39-19-2999"
+                                                       data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                                       ng-model="formData.militaryIssueDate" name="militaryIssueDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label">Кем выдан документ о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control"
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-model="formData.militaryIssueBy" name="militaryIssueBy" placeholder="Кем выдан документ о военной службе" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Если обязательно! -->
+                                    <!--<div ng-if="formData.militaryFormDoc.id == 1 || formData.militaryFormDoc.id == 2">
+                                        <div class="form-group required-big">
+                                            <label class="col-sm-4 control-label">Серия документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control" required
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-class="{'error-necessarily-field': fifthForm.militarySeries.$invalid, 'success-necessarily-field': fifthForm.militarySeries.$valid}"
+                                                       ng-model="formData.militarySeries" name="militarySeries" placeholder="Серия документа о военной службе" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group required-big">
+                                            <label class="col-sm-4 control-label">Номер документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control" required
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-class="{'error-necessarily-field': fifthForm.militaryNumber.$invalid, 'success-necessarily-field': fifthForm.militaryNumber.$valid}"
+                                                       ng-model="formData.militaryNumber" name="militaryNumber" placeholder="Номер документа о военной службе" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group required-big">
+                                            <label class="col-sm-4 control-label">Дата выдачи документа о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input id="militaryIssueDate"
+                                                           type="text" class="form-control" mask="39-19-2999" required
+                                                           data-toggle="tooltip" data-placement="right" title="Введите в формате ДД-ММ-ГГГГ"
+                                                           ng-class="{'error-necessarily-select': fifthForm.militaryIssueDate.$invalid, 'success-necessarily-select': fifthForm.militaryIssueDate.$valid}"
+                                                           ng-model="formData.militaryIssueDate" name="militaryIssueDate" placeholder="В формате ДД-ММ-ГГГГ" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group required-big">
+                                            <label class="col-sm-4 control-label">Кем выдан документ о военной службе</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control" required
+                                                       data-toggle="tooltip" data-placement="right" title="Заполняется текстом"
+                                                       ng-class="{'error-necessarily-field': fifthForm.militaryIssueBy.$invalid, 'success-necessarily-field': fifthForm.militaryIssueBy.$valid}"
+                                                       ng-model="formData.militaryIssueBy" name="militaryIssueBy" placeholder="Кем выдан документ о военной службе" />
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="sixthTab">
+                        <div class="form-horizontal" ng-form="sixthForm">
+                            <div ng-init="buffer.sixthForm = sixthForm"></div>
+                            <div class="repeat-block">
+                                <h4 class="text-center"><strong>Заявление</strong></h4>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Направление</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.applications[0].aspSpeciality"
+                                                   required name="aspSpeciality"
+                                                   ng-change="changeSpec()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': sixthForm.aspSpeciality.$invalid, 'success-necessarily-select': sixthForm.aspSpeciality.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.specialityName"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (aspDirectionsList | filter: $select.search) track by item.specialityId">
+                                                <span>{{item.specialityName}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Направленность</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.applications[0].aspDerectivity"
+                                                   required name="aspDerectivity"
+                                                   ng-change="changeDerect()"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': sixthForm.aspDerectivity.$invalid, 'success-necessarily-select': sixthForm.aspDerectivity.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.directivityName" title="{{$select.selected.directivityName}}"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (aspDirectionsSpecList | filter: $select.search) track by item.directivityId">
+                                                <span title="{{item.directivityName}}">{{item.directivityName}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Условия обучения</label>
+                                    <div class="col-sm-7">
+                                        <ui-select multiple ng-model="formData.applications[0].applicationLines" close-on-select="false"
+                                                   required name="applicationLines"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': sixthForm.applicationLines.$invalid, 'success-necessarily-select': sixthForm.applicationLines.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">{{$index+1}}) {{$item.environmentName}}</ui-select-match>
+                                            <ui-select-choices repeat="item in (evironmentSpecDirList | filter: $select.search) track by item.portalApplWizardId">
+                                                <span title="{{item.environmentName}}">{{item.environmentName}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="space"></div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Требуется общежитие?</label>
+                                    <div class="col-sm-7">
+                                        <div class="radio" ng-class="{'error-necessarily-radio': sixthForm.isHotel.$invalid, 'success-necessarily-radio': sixthForm.isHotel.$valid}">
+                                            <label>
+                                                <input type="radio" ng-model="formData.isHotel" name="isHotel" ng-value="true" required /> Да
+                                            </label>
+                                        </div>
+                                        <div class="radio" ng-class="{'error-necessarily-radio': sixthForm.isHotel.$invalid, 'success-necessarily-radio': sixthForm.isHotel.$valid}">
+                                            <label>
+                                                <input type="radio" ng-model="formData.isHotel" name="isHotel" ng-value="false" required /> Нет
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group required-big">
+                                    <label class="col-sm-4 control-label">Оригиналы поданных документов прошу вернуть</label>
+                                    <div class="col-sm-7">
+                                        <ui-select ng-model="formData.applications[0].docReturnType"
+                                                   required name="docReturnType"
+                                                   data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                                   ng-class="{'error-necessarily-select': sixthForm.docReturnType.$invalid, 'success-necessarily-select': sixthForm.docReturnType.$valid}">
+                                            <ui-select-match placeholder="Выберите из списка">
+                                                <span ng-bind="$select.selected.name"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="item in (deliveryTypeList | filter: $select.search) track by item.id">
+                                                <span>{{item.name}}</span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="space"></div>
+                    <div class="row">
+                        <div class="col-sm-7 col-sm-offset-3">
+                            <p ng-if="containerForm.$valid && addressesValid" class="success-all-necessarily-field">Все обязательные поля формы заполнены.</p>
+                            <p ng-if="containerForm.$invalid || !addressesValid" class="error-some-necessarily-field">Есть незаполненные обязательные поля формы.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <button class="btn btn-sm btn-primary" ng-disabled="currentTab == 1" ng-click="sendDraftFormData(); prevTab()">Назад</button>
+                            <button class="btn btn-sm btn-primary" ng-disabled="currentTab == 6" ng-click="sendDraftFormData(); nextTab()">Вперёд</button>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="pull-right">
+                                <button ng-click="sendFormDataToPK()" ng-if="containerForm.$valid && addressesValid"
+                                        class="btn btn-sm btn-success">Отправить в ПК</button>
+                                <button type="submit" class="btn btn-sm btn-warning"
+                                        ng-if="containerForm.$valid && addressesValid" ng-click="saveFormData()">Сохранить</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

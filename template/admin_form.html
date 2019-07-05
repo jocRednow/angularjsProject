@@ -1,0 +1,81 @@
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="#!/privateOffice">
+                    <img class="logo" src="/_graphics/logo_0.png" alt="СЗГМУ им. И.И.Мечникова">
+                </a>
+            </div>
+            <div class="col-md-6">
+                <p ng-if="messageShow" class="pull-left mt-30">
+                    <span ng-class="{ 'alert': flash, 'alert-success': flash.type == 'success', 'alert-danger': flash.type == 'error' }">{{flash.message}}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="space"></div>
+            <h1 class="text-center">Администрирование</h1>
+            <div class="space"></div>
+        </div>
+    </div>
+    <div class="space"></div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="admin-block">
+                <h3 class="text-center">Специалитет</h3>
+                <div class="space"></div>
+                <div class="material-switch pull-left">
+                    <input id="spec1" name="specSwitchOption1" ng-model="adminSettings.specEdit" type="checkbox"/>
+                    <label for="spec1" class="label-warning"></label>
+                    <span class="admin-block-text">Редактирование</span>
+                </div>
+                <div class="material-switch pull-left">
+                    <input id="spec2" name="specSwitchOption2" ng-model="adminSettings.specAppointment" type="checkbox"/>
+                    <label for="spec2" class="label-success"></label>
+                    <span class="admin-block-text">Запись на приём</span>
+                </div>
+                <div class="material-switch pull-left">
+                    <input id="spec3" name="specSwitchOption3" ng-model="adminSettings.specWithdrawal" type="checkbox"/>
+                    <label for="spec3" class="label-danger"></label>
+                    <span class="admin-block-text">Отзыв</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="admin-block">
+                <h3 class="text-center">Ординатура</h3>
+                <div class="space"></div>
+                <div class="material-switch pull-left">
+                    <input id="ord1" name="ordSwitchOption1" ng-model="adminSettings.ordEdit" type="checkbox"/>
+                    <label for="ord1" class="label-warning"></label>
+                    <span class="admin-block-text">Редактирование</span>
+                </div>
+                <div class="material-switch pull-left">
+                    <input id="ord2" name="ordSwitchOption2" ng-model="adminSettings.ordAppointment" type="checkbox"/>
+                    <label for="ord2" class="label-success"></label>
+                    <span class="admin-block-text">Запись на приём</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="admin-block">
+                <h3 class="text-center">Аспирантура</h3>
+                <div class="space"></div>
+                <div class="material-switch pull-left">
+                    <input id="asp1" name="aspSwitchOption1" ng-model="adminSettings.aspEdit" type="checkbox"/>
+                    <label for="asp1" class="label-warning"></label>
+                    <span class="admin-block-text">Редактирование</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary ml-20" ng-click="changesApply()">Применить</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html ng-app="appReg" lang="en" class="ng-cloak">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика</title>
+    <meta name="description" content="Статистика">
+    <!-- Mobile Meta -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../../_graphics/favicon.ico">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <!-- Bootstrap  -->
+    <link href="/libs/style/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom css -->
+    <link href="/css/style.css" rel="stylesheet">
+    <!--[if IE 7]>
+    <script>
+        alert("Вы используете браузер в режиме совместимости с Internet Explorer 7, не поддерживаемый порталом. Пожалуйста, отключите режим совместимости или воспользуйтесь другим браузером.");
+    </script>
+    <![endif]-->
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="index.html#!/privateOffice">
+                        <img class="logo" src="/_graphics/logo_0.png" alt="СЗГМУ им. И.И.Мечникова">
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <p class="pull-right mt-30">
+                        <a href="index.html#!/login" class="btn btn-sm btn-primary">Выход</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" ng-controller="statisticsCtrl">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="space"></div>
+                <h1 class="text-center">Статистика</h1>
+                <div class="space"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div ng-show="userList.length > 0" class="col-sm-6">
+                <input type="text" class="form-control"
+                       ng-model="search" placeholder="Введите Фамилию / ID формы" />
+            </div>
+        </div>
+        <div class="space"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <img ng-if="dataLoading" src="/css/loader.gif" />
+                <div ng-if="outUserList">
+                    <h2>Статистика недоступна.</h2>
+                    <p>Возможно, права были сброшены после входа под пользователем.</p>
+                </div>
+                <p ng-if="userList.length > 0" class="pull-right"><strong>Всего зарегистрировано: {{userList.length}}</strong></p>
+                <p ng-if="online.length > 0">
+                    <strong>Онлайн: <i class="fa fa-circle pull-left all-online-icon text-success" aria-hidden="true"></i>{{online.length}}</strong>
+                </p>
+                <div class="space"></div>
+                <table ng-if="userList.length > 0" class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>IP</th>
+                        <th>Логин</th>
+                        <th>Уровень образования</th>
+                        <th>ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in userList | filter:search">
+                            <td><i class="fa fa-circle pull-left online-icon" aria-hidden="true" ng-class="item.online ? 'text-success' : 'text-danger'"
+                                   ng-attr-title="{{item.online ? 'Онлайн' : 'Нет онлайн'}}"></i>
+                                <i class="fa fa-sign-in-alt enter-icon pull-right" ng-click="enterAsUser(item)"
+                                   title="Войти под пользователем"></i>
+                                <p ng-repeat="person in item.contactPersons | limitTo:3">
+                                    {{person.lastName}} {{person.firstName}} {{person.middleName}}
+                                </p>
+                            </td>
+                            <td>
+                                <span ng-if="item.ip.indexOf('10.130.60') == 0" class="text-warning"><strong>{{item.ip}}</strong></span>
+                                <span ng-if="item.ip.indexOf('10.130.1') == 0" class="text-success"><strong>{{item.ip}}</strong></span>
+                                <span ng-if="item.ip.indexOf('10.130.60') != 0 && item.ip.indexOf('10.130.1') != 0">{{item.ip}}</span>
+                            </td>
+                            <td>{{item.username}}</td>
+                            <td>
+                                <p ng-repeat="person in item.contactPersons | limitTo:3">
+                                    {{person.educationLevel.name}}
+                                </p>
+                            </td>
+                            <td>
+                                <p ng-repeat="person in item.contactPersons | limitTo:3">
+                                    <a href="" title="Посмотреть введённые данные"
+                                       ng-click="checkData(person)">{{person.id}}</a>
+                                </p>
+                            </td>
+                        </tr>
+                    <tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript files placed at the end of the document so the pages load faster
+        ================================================== -->
+    <!-- AngularJS -->
+    <script src="/libs/angular.min.js"></script>
+    <script src="/libs/angular-animate.min.js"></script>
+    <script src="/libs/ngMask.min.js"></script>
+    <script src="/libs/angular-sanitize.min.js"></script>
+    <script src="/libs/angular-route.min.js"></script>
+    <script src="/libs/angular-cookies.min.js"></script>
+    <script src="/libs/select.min.js"></script>
+    <!-- Jquery and Bootstrap -->
+    <script type="text/javascript" src="/libs/jquery-1.10.2.min.js"></script>
+    <script src="/libs/bootstrap.min.js"></script>
+    <!-- Custom Scripts -->
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/APIService.js"></script>
+    <script type="text/javascript" src="/js/controllers/statisticsCtrl.js"></script>
+</body>
+</html>

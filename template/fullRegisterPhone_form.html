@@ -1,0 +1,39 @@
+<div class="container mt-100">
+    <div class="col-sm-8 col-sm-offset-2">
+        <div ng-class="{ 'alert': flash, 'alert-success': flash.type === 'success', 'alert-danger': flash.type === 'error' }" ng-if="flash" ng-bind="flash.message"></div>
+        <div class="col-md-8 col-md-offset-2">
+            <h2>Регистрация</h2>
+            <form name="form" ng-submit="register()" role="form">
+                <div class="form-group" ng-class="{ 'has-error': form.phone.$dirty && form.phone.$error.required }">
+                    <label for="phone">Телефон</label>
+                    <input type="text" name="phone" id="phone" class="form-control"
+                           ng-pattern="mobilePhone"  mask="79999999999"
+                           data-toggle="tooltip" data-placement="right" title="Введите в формате 7XXXXXXXXXX"
+                           ng-model="user.phone" required />
+                    <span ng-show="form.phone.$dirty && form.phone.$error.required" class="help-block">Телефон обязательное поле</span>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+                    <label for="password">Пароль</label>
+                    <input type="password" name="password" id="password" class="form-control"
+                           data-toggle="tooltip" data-placement="right" title="Придумайте и введите пароль"
+                           ng-model="user.password" required />
+                    <span ng-show="form.password.$dirty && form.password.$error.required" class="help-block">Пароль обязательное поле</span>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': form.verificationCode.$dirty && form.verificationCode.$error.required }">
+                    <label for="verificationCode">Код верификации</label>
+                    <input type="password" name="verificationCode" id="verificationCode" class="form-control"
+                           ng-pattern="verificationCode"  mask="999"
+                           data-toggle="tooltip" data-placement="right" title="Введите SMS код высланный Вам, в формате XXX"
+                           ng-model="user.verificationCode" required />
+                    <span ng-show="form.verificationCode.$dirty && form.verificationCode.$error.required" class="help-block">Код верификации обязательное поле</span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" ng-disabled="form.$invalid || dataLoading"
+                            class="btn btn-primary">Регистрировать</button>
+                    <img ng-if="dataLoading" src="/css/loader.gif" />
+                    <a href="#!/registerChoice" class="btn btn-link pull-right">Выбор регистрации</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

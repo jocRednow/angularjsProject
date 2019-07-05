@@ -1,0 +1,139 @@
+<!-- Help Modal -->
+<div class="modal fade" id="helpBlock" tabindex="-1" role="dialog" aria-labelledby="helpBlock-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <form id="helpForm" name="helpForm">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="closeHelpBlock()" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Закрыть</span>
+                    </button>
+                    <h4 class="modal-title" id="helpBlock-label">Помощь</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">ФИО<span class="text-danger">*</span></label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" required
+                                   data-toggle="tooltip" data-placement="right" title="Введите Фамилию Имя Отчество"
+                                   ng-class="{'error-necessarily-field': helpForm.name.$invalid, 'success-necessarily-field': helpForm.name.$valid}"
+                                   ng-model="helpData.name" name="name" placeholder="Введите Фамилию Имя Отчество" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Электронная почта<span class="text-danger">*</span></label>
+                        <div class="col-sm-7">
+                            <input type="email" class="form-control" required
+                                   data-toggle="tooltip" data-placement="right" title="Введите в формате ХХХХХХ@ХХХ.XX"
+                                   ng-class="{'error-necessarily-field': helpForm.email.$invalid, 'success-necessarily-field': helpForm.email.$valid}"
+                                   ng-model="helpData.email" name="email" placeholder="Электронная почта" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Тип вопроса<span class="text-danger">*</span></label>
+                        <div class="col-sm-7">
+                            <ui-select ng-model="helpData.theme"
+                                       required name="theme"
+                                       data-toggle="tooltip" data-placement="right" title="Выберите значение из списка"
+                                       ng-class="{'error-necessarily-select': helpForm.theme.$invalid, 'success-necessarily-select': helpForm.theme.$valid}">
+                                <ui-select-match placeholder="Выберите из списка">
+                                    <span ng-bind="$select.selected.name"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item in (themeList | filter: $select.search) track by item.id">
+                                    <span>{{item.name}}</span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-sm-11 alert alert-info" role="alert">
+                        По вопросам, связанным с правилами приема звоните в call центр приемной комиссии
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Комментарий<span class="text-danger">*</span></label>
+                        <div class="col-sm-7">
+                                <textarea class="form-control" name="comment" id="comment" required
+                                          placeholder="Опишите суть проблемы"
+                                          data-toggle="tooltip" data-placement="right" title="Введите текстом"
+                                          ng-class="{'error-necessarily-select': helpForm.comment.$invalid, 'success-necessarily-select': helpForm.comment.$valid}"
+                                          ng-model="helpData.comment" rows="6"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Прикрепление файла/файлов</label>
+                        <div class="col-sm-5">
+                            <input onchange="angular.element(this).scope().uploadFile(this)" type="file" id="helpFiles" class="success-necessarily-block"
+                                   data-toggle="tooltip" data-placement="right" title="Прикрепите файл/файлы в формате (.pdf)"
+                                   name="helpFiles" accept="image/jpeg,image/png,image/gif,application/pdf" style="width: 300px;">
+                            <p ng-repeat="file in helpData.helpFiles" class="file-list">
+                                {{$index+1}} <span class="glyphicon glyphicon-file"></span>{{file.userFileName}}
+                                <span ng-click="deleteFile(helpData.helpFiles, file, 'helpFiles')">
+                                        <i class="glyphicon glyphicon-remove text-danger file-delete-icon" title="Удалить"></i>
+                                    </span>
+                            </p>
+                        </div>
+                        <div class="col-sm-1">
+                            <img ng-if="dataLoading" class="loader" src="/css/loader.gif" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-md-7 text-left">
+                            <button ng-if="helpForm.$valid" data-dismiss="modal"
+                                    ng-click="sendHelpData()" class="btn btn-sm btn-success">Отправить</button>
+                        </div>
+                        <div class="col-md-5">
+                            <button type="button" data-dismiss="modal"
+                                    class="btn btn-sm btn-default" ng-click="closeHelpBlock()">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- END Help Modal -->
+<div class="container mt-100">
+    <div class="col-sm-8 col-sm-offset-2">
+        <div class="row">
+            <div class="col-sm-2">
+                <img class="logo_port" width="110px" src="/css/logo.png" alt="Logo">
+            </div>
+            <div class="col-sm-8">
+                <h2 class="text-center">
+                    СЗГМУ им. И.И.Мечникова <br>
+                    Приёмная кампания {{ getCurrentYear() }}
+                </h2>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+            <div ng-class="{ 'alert': flash, 'alert-success': flash.type == 'success', 'alert-danger': flash.type == 'error' }" ng-bind="flash.message"></div>
+            <form name="form" ng-submit="login()" role="form">
+                <div class="form-group" ng-class="{ 'has-error': form.username.$dirty && form.username.$error.required }">
+                    <label for="username">Логин (телефон или почта)</label>
+                    <input type="text" name="username" id="username" class="form-control"
+                           data-toggle="tooltip" data-placement="right" title="Введите телефон (в формате 7XXXXXXXXXX) или электронный адрес"
+                           ng-model="logInForm.username" required />
+                    <span ng-show="form.username.$dirty && form.username.$error.required" class="help-block">Логин обязательное поле</span>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': form.password.$dirty && form.password.$error.required }">
+                    <label for="password">Пароль</label>
+                    <input type="password" name="password" id="password" class="form-control"
+                           data-toggle="tooltip" data-placement="right" title="Введите пароль"
+                           ng-model="logInForm.password" required />
+                    <span ng-show="form.password.$dirty && form.password.$error.required" class="help-block">Пароль обязательное поле</span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" ng-disabled="form.$invalid || dataLoading"
+                            class="btn btn-primary">Вход</button>
+                    <img ng-if="dataLoading" src="/css/loader.gif" />
+                    <a href="#!/registerChoice" class="btn btn-link">Регистрация</a>
+                    <a href="#!/resetPassword" class="btn btn-link pull-right">Забыли пароль?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<button class="btn btn-sm btn-success pull-right help-btn-on-reg" ng-click="openHelpBlock()"
+        data-animation-effect="fadeIn" data-toggle="modal" data-target="#helpBlock">
+    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+    Помощь</button>
